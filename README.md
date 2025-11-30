@@ -2,7 +2,7 @@
 
 A beautiful web app to discover your Los Angeles geography context. Find your neighborhood, region, police division, council district, and demographics for any address in LA County.
 
-**Live at**: [whatsmyla.com](https://whatsmyla.com)
+**Soon the be live at**: [whatsmyla.com](https://whatsmyla.com)
 
 ## Features
 
@@ -103,13 +103,9 @@ vercel --prod
 ## Data Sources
 
 - **Neighborhoods**: [LA Times Data Desk](https://github.com/datadesk/boundaries.latimes.com) (archived)
-- **Demographics**: 2020 U.S. Decennial Census
+- **Demographics**: U.S. Census Bureau (2020 hard count)
 - **Geographic Layers**: [LA Geography API](https://stilesdata.com/la-geography)
 
 ## License
 
 MIT
-
-## Credits
-
-Built by Matt Stiles using data from the LA Times Data Desk and the LA Geography API.
