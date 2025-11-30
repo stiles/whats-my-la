@@ -2,7 +2,7 @@
 
 A simple web app that helps users discover their Los Angeles in geographic context. Find a neighborhood, region, police division, council district and demographics for any address in LA County.
 
-**Soon the be live at**: [whatsmyla.com](https://whatsmyla.com)
+**Soon to be live at**: [whatsmyla.com](https://whatsmyla.com)
 
 ## Features
 
@@ -28,14 +28,14 @@ A simple web app that helps users discover their Los Angeles in geographic conte
 ### Prerequisites
 
 - Node.js 18+
-- Mapbox API token (free tier available)
+- Mapbox API token
 
 ### Setup
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/whats-my-la.git
+git clone https://github.com/stiles/whats-my-la.git
 cd whats-my-la
 ```
 
@@ -56,8 +56,6 @@ cp .env.example .env
 ```
 PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
 ```
-
-Get a free token at: https://account.mapbox.com/access-tokens/
 
 ### Run Development Server
 
