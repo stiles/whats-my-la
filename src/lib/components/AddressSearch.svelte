@@ -84,7 +84,7 @@
       on:focus={() => (showSuggestions = suggestions.length > 0)}
       on:blur={handleBlur}
       placeholder="Enter an LA address or neighborhood..."
-      class="w-full px-6 py-4 text-lg rounded-full border-2 border-gray-300 focus:border-primary focus:outline-none shadow-lg transition-all"
+      class="w-full px-6 py-4 text-sm rounded-full border-2 border-border-subtle focus:border-primary focus:outline-none shadow-lg transition-all bg-surface text-text"
     />
 
     {#if loading}
@@ -94,12 +94,12 @@
     {/if}
 
     {#if showSuggestions && suggestions.length > 0}
-      <div class="absolute w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto z-10">
+      <div class="absolute w-full mt-2 bg-surface rounded-lg shadow-xl border border-border-subtle max-h-80 overflow-y-auto z-10">
         {#each suggestions as suggestion}
           <button
             type="button"
             on:click={() => selectSuggestion(suggestion)}
-            class="w-full px-6 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+            class="w-full px-6 py-3 text-left hover:bg-surface-muted/50 transition-colors border-b border-border-subtle last:border-b-0"
           >
             <div class="font-medium text-gray-900">{suggestion.text}</div>
             <div class="text-sm text-gray-600">{suggestion.place_name}</div>

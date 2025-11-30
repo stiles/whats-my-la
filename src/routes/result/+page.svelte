@@ -7,7 +7,15 @@
   import GeographyCard from '$lib/components/GeographyCard.svelte';
   import DemographicsPanel from '$lib/components/DemographicsPanel.svelte';
   import ShareCard from '$lib/components/ShareCard.svelte';
+  import LocationMap from '$lib/components/LocationMap.svelte';
   import { formatCoordinates } from '$lib/utils/formatters';
+
+  const LA_COUNTY_BBOX = {
+    min_lon: -119.0,
+    max_lon: -117.6,
+    min_lat: 33.7,
+    max_lat: 34.8
+  };
 
   let loading = true;
   let error = '';
@@ -15,6 +23,7 @@
   let address = '';
   let lat = 0;
   let lon = 0;
+  let outsideLACounty = false;
 
   onMount(async () => {
     const latParam = $page.url.searchParams.get('lat');
@@ -31,9 +40,17 @@
     lon = parseFloat(lonParam);
     address = addressParam || '';
 
+    outsideLACounty =
+      lat < LA_COUNTY_BBOX.min_lat ||
+      lat > LA_COUNTY_BBOX.max_lat ||
+      lon < LA_COUNTY_BBOX.min_lon ||
+      lon > LA_COUNTY_BBOX.max_lon;
+
     try {
-      // Fetch geography data
-      geographyData = await getLAGeography(lat, lon);
+      // Fetch geography data only for locations inside LA County
+      if (!outsideLACounty) {
+        geographyData = await getLAGeography(lat, lon);
+      }
 
       // If no address provided, reverse geocode
       if (!address) {
@@ -48,8 +65,8 @@
         }
       }
     } catch (err) {
-      error = 'Failed to fetch geography data. This location may be outside LA County.';
-      console.error(err);
+      error = 'I couldn’t look this spot up. The LA Geography API may be having a moment.';
+      console.error('Error:', err);
     } finally {
       loading = false;
     }
@@ -63,6 +80,7 @@
     fire: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>',
     council: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>',
     school: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>',
+    neighborhoodCouncil: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5 21a7 7 0 0114 0H5z" /></svg>',
   };
 </script>
 
@@ -74,42 +92,91 @@
   {#if loading}
     <div class="flex flex-col items-center justify-center py-20">
       <div class="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
-      <p class="text-gray-600">Loading your LA geography...</p>
+      <p class="text-gray-600">Figuring out where this spot fits in LA…</p>
     </div>
-  {:else if error}
-    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-      <p class="text-red-800 mb-4">{error}</p>
-      <a href="/" class="text-primary hover:underline">← Go back and try again</a>
-    </div>
-  {:else if geographyData}
+  {:else}
     <!-- Header -->
     <div class="mb-8">
       <a href="/" class="text-primary hover:underline mb-2 inline-block">← Search again</a>
-      <h1 class="text-4xl font-bold text-text mb-2">Your LA Geography</h1>
+      <h1 class="text-4xl font-bold text-text mb-2">Here’s where this place really is</h1>
       {#if address}
         <p class="text-xl text-gray-600">{address}</p>
       {/if}
       <p class="text-sm text-gray-500 mt-1">{formatCoordinates(lat, lon)}</p>
     </div>
 
+    <!-- Map -->
+    <div class="mb-4">
+      <LocationMap
+        {lat}
+        {lon}
+        {address}
+        neighborhoodName={geographyData?.layers.la_neighborhoods_comprehensive?.name}
+        cityName={geographyData?.layers.la_neighborhoods_comprehensive?.type}
+      />
+    </div>
+
+    {#if outsideLACounty}
+      <div class="mb-10">
+        <p class="text-sm text-gray-700">
+          This spot is outside Los Angeles County, so LA-specific layers and demographics aren’t available here.
+        </p>
+      </div>
+    {/if}
+
+    {#if error}
+      <div class="mb-10 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+        <p class="text-red-800 mb-4">{error}</p>
+        <a href="/" class="text-primary hover:underline">← Go back and try again</a>
+      </div>
+    {/if}
+
+    {#if geographyData}
+
     <!-- Geography Cards -->
     <div class="mb-12">
       <h2 class="text-2xl font-bold text-text mb-6">Where you are</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {#if geographyData.layers.la_neighborhoods_comprehensive}
+          {#if geographyData.place?.placeCategory === 'unincorporated_area'}
+            <GeographyCard
+              icon={icons.neighborhood}
+              label="Unincorporated area"
+              value={geographyData.layers.la_neighborhoods_comprehensive.name}
+              subtitle="Unincorporated Los Angeles County"
+              prominent={true}
+            />
+          {:else if geographyData.place?.placeCategory === 'standalone_city'}
+            <GeographyCard
+              icon={icons.neighborhood}
+              label="City"
+              value={geographyData.layers.la_neighborhoods_comprehensive.name}
+              subtitle="Incorporated city in Los Angeles County"
+              prominent={true}
+            />
+          {:else}
+            <GeographyCard
+              icon={icons.neighborhood}
+              label="Neighborhood (City of LA)"
+              value={geographyData.layers.la_neighborhoods_comprehensive.name}
+              subtitle={geographyData.layers.la_neighborhoods_comprehensive.type}
+              prominent={true}
+            />
+          {/if}
+        {/if}
+
+        {#if geographyData.layers.la_neighborhood_councils}
           <GeographyCard
-            icon={icons.neighborhood}
-            label="Neighborhood"
-            value={geographyData.layers.la_neighborhoods_comprehensive.name}
-            subtitle={geographyData.layers.la_neighborhoods_comprehensive.type}
-            prominent={true}
+            icon={icons.neighborhoodCouncil}
+            label="Neighborhood Council"
+            value={geographyData.layers.la_neighborhood_councils.name}
           />
         {/if}
 
         {#if geographyData.layers.la_regions}
           <GeographyCard
             icon={icons.region}
-            label="Region"
+            label="LA County Region"
             value={geographyData.layers.la_regions.name}
           />
         {/if}
@@ -152,11 +219,13 @@
     </div>
 
     <!-- Demographics -->
-    {#if geographyData.demographics?.la_neighborhoods_comprehensive}
+    {#if geographyData.demographics}
       <div class="mb-12">
         <DemographicsPanel
-          demographics={geographyData.demographics.la_neighborhoods_comprehensive}
-          area={geographyData.layers.la_neighborhoods_comprehensive?.area_sqmi || 0}
+          neighborhood={geographyData.demographics.neighborhood}
+          city={geographyData.demographics.city}
+          neighborhoodLabel={geographyData.layers.la_neighborhoods_comprehensive?.name || 'Neighborhood'}
+          cityLabel={geographyData.layers.la_neighborhoods_comprehensive?.type || 'City'}
         />
       </div>
     {/if}
@@ -171,5 +240,6 @@
       />
     </div>
   {/if}
+{/if}
 </div>
 

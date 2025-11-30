@@ -1,106 +1,235 @@
 <script lang="ts">
-  import { formatNumber, formatPercent, formatDensity } from '$lib/utils/formatters';
+  import { formatNumber, formatPercent } from '$lib/utils/formatters';
+  import type { SimpleDemographics } from '$lib/api/laGeography';
 
-  export let demographics: any;
-  export let area: number = 0;
+  // LA County baseline for comparison
+  const LA_COUNTY_DEMOGRAPHICS = {
+    population: 10014009,
+    pop_hispanic: 4804763,
+    pop_white_nh: 2563609,
+    pop_black_nh: 760689,
+    pop_asian_nh: 1474237,
+    pop_other_nh: 410711
+  };
 
-  $: popTotal = demographics?.pop_total || 0;
-  $: popHispanic = demographics?.pop_hispanic || 0;
-  $: popWhite = demographics?.pop_white_nh || 0;
-  $: popBlack = demographics?.pop_black_nh || 0;
-  $: popAsian = demographics?.pop_asian_nh || 0;
-  $: popOther = demographics?.pop_other_nh || 0;
-  $: housingTotal = demographics?.housing_total || 0;
-  $: housingOccupied = demographics?.housing_occupied || 0;
+  const LA_COUNTY_PERCENTAGES = {
+    hispanic: 48.0,
+    white_nh: 25.6,
+    black_nh: 7.6,
+    asian_nh: 14.7,
+    other_nh: 4.1
+  };
 
-  $: density = area > 0 ? formatDensity(popTotal, area) : '0';
+  export let neighborhood: SimpleDemographics | null = null;
+  export let city: SimpleDemographics | null = null;
+  export let neighborhoodLabel: string = 'Neighborhood';
+  export let cityLabel: string = 'City';
 
-  $: raceData = [
-    { label: 'Hispanic/Latino', value: popHispanic, color: 'bg-primary' },
-    { label: 'White (non-Hispanic)', value: popWhite, color: 'bg-secondary' },
-    { label: 'Black (non-Hispanic)', value: popBlack, color: 'bg-accent' },
-    { label: 'Asian (non-Hispanic)', value: popAsian, color: 'bg-green-500' },
-    { label: 'Other', value: popOther, color: 'bg-gray-400' },
-  ].filter(d => d.value > 0);
+  const raceRows = [
+    { key: 'pop_hispanic', label: 'Hispanic/Latino', pctKey: 'hispanic' },
+    { key: 'pop_white_nh', label: 'White (non-Hispanic)', pctKey: 'white_nh' },
+    { key: 'pop_black_nh', label: 'Black (non-Hispanic)', pctKey: 'black_nh' },
+    { key: 'pop_asian_nh', label: 'Asian (non-Hispanic)', pctKey: 'asian_nh' },
+    { key: 'pop_other_nh', label: 'Other / multiracial', pctKey: 'other_nh' },
+  ] as const;
+
+  const hasNeighborhood = neighborhood && neighborhood.population > 0;
+  const hasCity = city && city.population > 0;
+
+  // If neighborhood and city are effectively the same place (e.g., Santa Monica),
+  // we only show one local column to keep the table simple.
+  const samePlace =
+    hasNeighborhood &&
+    hasCity &&
+    neighborhoodLabel.trim().toLowerCase() === cityLabel.trim().toLowerCase();
+
+  const showTable = hasNeighborhood || hasCity;
+
+  const primaryColumn: 'neighborhood' | 'city' | null =
+    hasNeighborhood ? 'neighborhood' : hasCity ? 'city' : null;
+
+  const primaryDemo: SimpleDemographics | null =
+    primaryColumn === 'neighborhood'
+      ? (neighborhood || null)
+      : primaryColumn === 'city'
+      ? (city || null)
+      : null;
+
+  function formatDemographicNumber(num: number): string {
+    if (!num) return '0';
+    // For large values, round to the nearest thousand to avoid false precision
+    if (num >= 100_000) {
+      const rounded = Math.round(num / 1000) * 1000;
+      return formatNumber(rounded);
+    }
+    return formatNumber(num);
+  }
+
+  function formatCell(value: number | undefined, total: number | undefined): string {
+    if (!value || !total) return '—';
+    return `${formatDemographicNumber(value)} (${formatPercent(value, total)})`;
+  }
+
+  function formatCountyCell(key: keyof typeof LA_COUNTY_DEMOGRAPHICS, pctKey?: keyof typeof LA_COUNTY_PERCENTAGES): string {
+    const count = LA_COUNTY_DEMOGRAPHICS[key];
+    if (!pctKey) {
+      return formatDemographicNumber(count);
+    }
+    const pct = LA_COUNTY_PERCENTAGES[pctKey];
+    return `${formatDemographicNumber(count)} (${pct.toFixed(1)}%)`;
+  }
+
+  function headerLabel(label: string, col: 'neighborhood' | 'city'): string {
+    return primaryColumn === col ? `${label} (you)` : label;
+  }
+
+  function primaryCellClass(col: 'neighborhood' | 'city'): string {
+    return primaryColumn === col ? 'bg-orange-50' : '';
+  }
+
+  function diffClass(
+    demo: SimpleDemographics | null,
+    key: keyof SimpleDemographics,
+    pctKey?: keyof typeof LA_COUNTY_PERCENTAGES
+  ): string {
+    if (!demo || !pctKey || !demo.population) return '';
+    const value = demo[key] as number | undefined;
+    if (!value) return '';
+    const localPct = (value / demo.population) * 100;
+    const countyPct = LA_COUNTY_PERCENTAGES[pctKey];
+    const diff = localPct - countyPct;
+    if (Math.abs(diff) < 3) return '';
+    return 'font-semibold text-primary';
+  }
 </script>
 
-<div class="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-  <h3 class="text-2xl font-bold text-gray-900 mb-6">Demographics</h3>
+<div class="bg-surface rounded-lg shadow-md p-4 sm:p-5 md:p-6 border border-border-subtle">
+  <h3 class="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">Demographics</h3>
 
-  {#if popTotal > 0}
-    <!-- Population Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="text-center p-4 bg-gray-50 rounded-lg">
-        <div class="text-3xl font-bold text-primary mb-1">
-          {formatNumber(popTotal)}
-        </div>
-        <div class="text-sm text-gray-600">Total Population</div>
-      </div>
-      <div class="text-center p-4 bg-gray-50 rounded-lg">
-        <div class="text-3xl font-bold text-secondary mb-1">
-          {density}
-        </div>
-        <div class="text-sm text-gray-600">People per sq mi</div>
-      </div>
-      <div class="text-center p-4 bg-gray-50 rounded-lg">
-        <div class="text-3xl font-bold text-accent mb-1">
-          {formatNumber(housingTotal)}
-        </div>
-        <div class="text-sm text-gray-600">Housing Units</div>
-      </div>
+  {#if showTable}
+    <p class="text-[0.8rem] text-text-muted mb-2">
+      We compare your place to Los Angeles County. Bold values mark racial or ethnic groups that differ noticeably from the county average.
+    </p>
+
+    <div class="overflow-x-auto">
+      <!-- Mobile: just "You" vs LA County -->
+      {#if primaryDemo}
+        <table class="min-w-full text-[13px] text-left border-collapse md:hidden">
+          <thead>
+            <tr class="border-b border-border-subtle text-[0.65rem] uppercase tracking-wide text-text-muted">
+              <th class="py-1.5 pr-3">Group</th>
+              <th class="py-1.5 px-3">You</th>
+              <th class="py-1.5 px-3">LA County</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr>
+              <td class="py-2 pr-3 font-medium text-text">Total population</td>
+              <td class="py-2 px-3 text-text bg-surface-muted">
+                {formatDemographicNumber(primaryDemo.population)}
+              </td>
+              <td class="py-2 px-3 text-text">
+                {formatCountyCell('population')}
+              </td>
+            </tr>
+
+            {#each raceRows as row}
+              <tr>
+              <td class="py-2 pr-3 text-text-muted">{row.label}</td>
+              <td class="py-2 px-3 text-text bg-surface-muted {diffClass(primaryDemo, row.key, row.pctKey)}">
+                  {formatCell(
+                    primaryDemo ? (primaryDemo[row.key] as number) : undefined,
+                    primaryDemo?.population
+                  )}
+                </td>
+                <td class="py-2 px-3 text-text">
+                  {formatCountyCell(row.key, row.pctKey)}
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+
+      <!-- Desktop: neighborhood, city (if available) and county -->
+      <table class="min-w-full text-[11px] md:text-[14px] text-left border-collapse hidden md:table">
+        <thead>
+          <tr class="border-b border-border-subtle text-xs uppercase tracking-wide text-text-muted">
+            <th class="py-1.5 pr-3">Group</th>
+            {#if hasNeighborhood}
+              <th class="py-1.5 px-3">
+                {headerLabel(neighborhoodLabel, 'neighborhood')}
+              </th>
+            {/if}
+            {#if hasCity && !samePlace}
+              <th class="py-1.5 px-3">
+                {headerLabel(cityLabel, 'city')}
+              </th>
+            {/if}
+            <th class="py-1.5 px-3">LA County</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <!-- Total population row -->
+          <tr>
+            <td class="py-2 pr-3 font-medium text-text">Total population</td>
+            {#if hasNeighborhood}
+              <td class="py-2 px-3 text-text {primaryCellClass('neighborhood')}">
+                {formatDemographicNumber(neighborhood?.population || 0)}
+              </td>
+            {/if}
+            {#if hasCity && !samePlace}
+              <td class="py-2 px-3 text-text {primaryCellClass('city')}">
+                {formatDemographicNumber(city?.population || 0)}
+              </td>
+            {/if}
+            <td class="py-2 px-3 text-text">
+              {formatCountyCell('population')}
+            </td>
+          </tr>
+
+          {#each raceRows as row}
+            <tr>
+              <td class="py-2 pr-3 text-text-muted">{row.label}</td>
+              {#if hasNeighborhood}
+                <td class="py-2 px-3 text-text {primaryCellClass('neighborhood')} {diffClass(
+                  neighborhood,
+                  row.key,
+                  row.pctKey
+                )}">
+                  {formatCell(
+                    neighborhood ? (neighborhood[row.key] as number) : undefined,
+                    neighborhood?.population
+                  )}
+                </td>
+              {/if}
+              {#if hasCity && !samePlace}
+                <td class="py-2 px-3 text-text {primaryCellClass('city')} {diffClass(
+                  city,
+                  row.key,
+                  row.pctKey
+                )}">
+                  {formatCell(
+                    city ? (city[row.key] as number) : undefined,
+                    city?.population
+                  )}
+                </td>
+              {/if}
+              <td class="py-2 px-3 text-text">
+                {formatCountyCell(row.key, row.pctKey)}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
-
-    <!-- Race/Ethnicity Breakdown -->
-    <div class="mb-6">
-      <h4 class="font-semibold text-gray-700 mb-3">Race & Ethnicity</h4>
-      <div class="space-y-3">
-        {#each raceData as race}
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-sm text-gray-700">{race.label}</span>
-              <span class="text-sm font-medium text-gray-900">
-                {formatNumber(race.value)} ({formatPercent(race.value, popTotal)})
-              </span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2">
-              <div
-                class="{race.color} h-2 rounded-full transition-all"
-                style="width: {(race.value / popTotal) * 100}%"
-              ></div>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- Housing Stats -->
-    {#if housingTotal > 0}
-      <div class="pt-6 border-t border-gray-200">
-        <h4 class="font-semibold text-gray-700 mb-3">Housing</h4>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div class="text-gray-600">Occupied</div>
-            <div class="font-semibold text-gray-900">
-              {formatNumber(housingOccupied)} ({formatPercent(housingOccupied, housingTotal)})
-            </div>
-          </div>
-          <div>
-            <div class="text-gray-600">Vacant</div>
-            <div class="font-semibold text-gray-900">
-              {formatNumber(housingTotal - housingOccupied)} ({formatPercent(housingTotal - housingOccupied, housingTotal)})
-            </div>
-          </div>
-        </div>
-      </div>
-    {/if}
   {:else}
     <div class="text-center py-8 text-gray-500">
       <p>No demographic data available for this location.</p>
     </div>
   {/if}
 
-  <div class="mt-6 pt-6 border-t border-gray-200 text-xs text-gray-500">
-    <p>Source: 2020 U.S. Decennial Census</p>
+  <div class="mt-6 pt-6 border-t border-border-subtle text-xs text-text-muted">
+    <p>Note: Values derived from a spatial analysis of geographic boundaries and US Census Bureau data and should be considered estimates.</p>
   </div>
 </div>
-

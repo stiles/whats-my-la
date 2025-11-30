@@ -1,4 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+@theme {
+  /* Core palette: sunset + harbor, WCAG-friendly */
+  --color-primary: #d83900;       /* main orange */
+  --color-secondary: #00345b;     /* deep navy for header / CTAs */
+  --color-accent: #f2a900;        /* warm yellow accents */
+  --color-background: #f5f5f5;    /* page background under cards */
+  --color-text: #111827;          /* primary text */
+
+  /* Surfaces and supporting tokens */
+  --color-surface: #ffffff;       /* cards, panels, table backgrounds */
+  --color-surface-muted: #ffe5d2; /* soft orange highlight (e.g. local column) */
+  --color-footer: #020617;        /* very dark navy for footer/header */
+  --color-border-subtle: #e5e7eb; /* dividers, card borders */
+  --color-text-muted: #4b5563;    /* secondary / helper text */
+}
+
 
