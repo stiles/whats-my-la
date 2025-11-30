@@ -1,0 +1,175 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { getLAGeography, type LAGeographyResponse } from '$lib/api/laGeography';
+  import { reverseGeocode } from '$lib/api/geocode';
+  import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
+  import GeographyCard from '$lib/components/GeographyCard.svelte';
+  import DemographicsPanel from '$lib/components/DemographicsPanel.svelte';
+  import ShareCard from '$lib/components/ShareCard.svelte';
+  import { formatCoordinates } from '$lib/utils/formatters';
+
+  let loading = true;
+  let error = '';
+  let geographyData: LAGeographyResponse | null = null;
+  let address = '';
+  let lat = 0;
+  let lon = 0;
+
+  onMount(async () => {
+    const latParam = $page.url.searchParams.get('lat');
+    const lonParam = $page.url.searchParams.get('lon');
+    const addressParam = $page.url.searchParams.get('address');
+
+    if (!latParam || !lonParam) {
+      error = 'Missing coordinates';
+      loading = false;
+      return;
+    }
+
+    lat = parseFloat(latParam);
+    lon = parseFloat(lonParam);
+    address = addressParam || '';
+
+    try {
+      // Fetch geography data
+      geographyData = await getLAGeography(lat, lon);
+
+      // If no address provided, reverse geocode
+      if (!address) {
+        try {
+          const geocodeResult = await reverseGeocode(lon, lat, PUBLIC_MAPBOX_ACCESS_TOKEN);
+          if (geocodeResult.features.length > 0) {
+            address = geocodeResult.features[0].place_name;
+          }
+        } catch (err) {
+          console.error('Reverse geocode failed:', err);
+          address = formatCoordinates(lat, lon);
+        }
+      }
+    } catch (err) {
+      error = 'Failed to fetch geography data. This location may be outside LA County.';
+      console.error(err);
+    } finally {
+      loading = false;
+    }
+  });
+
+  // Icon SVGs
+  const icons = {
+    neighborhood: '<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>',
+    region: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>',
+    police: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>',
+    fire: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>',
+    council: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>',
+    school: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>',
+  };
+</script>
+
+<svelte:head>
+  <title>{address || 'Results'} - What's My LA?</title>
+</svelte:head>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  {#if loading}
+    <div class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
+      <p class="text-gray-600">Loading your LA geography...</p>
+    </div>
+  {:else if error}
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <p class="text-red-800 mb-4">{error}</p>
+      <a href="/" class="text-primary hover:underline">← Go back and try again</a>
+    </div>
+  {:else if geographyData}
+    <!-- Header -->
+    <div class="mb-8">
+      <a href="/" class="text-primary hover:underline mb-2 inline-block">← Search again</a>
+      <h1 class="text-4xl font-bold text-text mb-2">Your LA Geography</h1>
+      {#if address}
+        <p class="text-xl text-gray-600">{address}</p>
+      {/if}
+      <p class="text-sm text-gray-500 mt-1">{formatCoordinates(lat, lon)}</p>
+    </div>
+
+    <!-- Geography Cards -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-text mb-6">Where you are</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {#if geographyData.layers.la_neighborhoods_comprehensive}
+          <GeographyCard
+            icon={icons.neighborhood}
+            label="Neighborhood"
+            value={geographyData.layers.la_neighborhoods_comprehensive.name}
+            subtitle={geographyData.layers.la_neighborhoods_comprehensive.type}
+            prominent={true}
+          />
+        {/if}
+
+        {#if geographyData.layers.la_regions}
+          <GeographyCard
+            icon={icons.region}
+            label="Region"
+            value={geographyData.layers.la_regions.name}
+          />
+        {/if}
+
+        {#if geographyData.layers.lapd_divisions}
+          <GeographyCard
+            icon={icons.police}
+            label="Police Division"
+            value={geographyData.layers.lapd_divisions.aprec}
+            subtitle="LAPD"
+          />
+        {/if}
+
+        {#if geographyData.layers.lafd_station_boundaries}
+          <GeographyCard
+            icon={icons.fire}
+            label="Fire Station"
+            value={geographyData.layers.lafd_station_boundaries.name}
+            subtitle="LAFD"
+          />
+        {/if}
+
+        {#if geographyData.layers.la_city_council_districts}
+          <GeographyCard
+            icon={icons.council}
+            label="City Council"
+            value={geographyData.layers.la_city_council_districts.district_name}
+            subtitle={`District ${geographyData.layers.la_city_council_districts.district}`}
+          />
+        {/if}
+
+        {#if geographyData.layers.la_county_school_districts}
+          <GeographyCard
+            icon={icons.school}
+            label="School District"
+            value={geographyData.layers.la_county_school_districts.label}
+          />
+        {/if}
+      </div>
+    </div>
+
+    <!-- Demographics -->
+    {#if geographyData.demographics?.la_neighborhoods_comprehensive}
+      <div class="mb-12">
+        <DemographicsPanel
+          demographics={geographyData.demographics.la_neighborhoods_comprehensive}
+          area={geographyData.layers.la_neighborhoods_comprehensive?.area_sqmi || 0}
+        />
+      </div>
+    {/if}
+
+    <!-- Share Card -->
+    <div class="mb-12">
+      <ShareCard
+        {address}
+        {lat}
+        {lon}
+        {geographyData}
+      />
+    </div>
+  {/if}
+</div>
+
