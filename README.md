@@ -1,6 +1,6 @@
 # What's My LA?
 
-A beautiful web app to discover your Los Angeles geography context. Find your neighborhood, region, police division, council district, and demographics for any address in LA County.
+A simple web app that helps users discover their Los Angeles in geographic context. Find a neighborhood, region, police division, council district and demographics for any address in LA County.
 
 **Soon the be live at**: [whatsmyla.com](https://whatsmyla.com)
 
