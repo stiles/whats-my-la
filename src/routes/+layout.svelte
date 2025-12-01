@@ -1,5 +1,6 @@
 <script>
   import '../app.css';
+  import '@fortawesome/fontawesome-free/css/all.min.css';
 </script>
 
 <div class="min-h-screen bg-background">
@@ -28,7 +29,7 @@
           <div>
             <h2 class="text-xl font-semibold text-white mb-1">What's My LA?</h2>
             <p class="mt-1 text-sm text-gray-300">
-              Built for people who aren’t quite sure where they live in LA — or keep losing arguments about it.
+              Built for people who aren’t quite sure <em>where</em> they live in LA — or keep losing arguments about it.
             </p>
 
             <div class="mt-4 flex flex-col gap-1 text-sm">
