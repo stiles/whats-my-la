@@ -24,7 +24,7 @@
         return null;
       }
       neighborhoodsGeoJson = await res.json();
-      console.log('Loaded neighborhoods GeoJSON', neighborhoodsGeoJson);
+      // console.log('Loaded neighborhoods GeoJSON', neighborhoodsGeoJson);
       return neighborhoodsGeoJson;
     } catch (err) {
       console.error('Error loading neighborhoods GeoJSON', err);
@@ -115,7 +115,7 @@
           return;
         }
 
-        console.log('Highlighting neighborhood feature', (feature.properties as any)?.name);
+        // console.log('Highlighting neighborhood feature', (feature.properties as any)?.name);
 
         const sourceId = 'la-area';
         const fillLayerId = 'la-area-fill';

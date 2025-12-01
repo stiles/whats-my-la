@@ -1,12 +1,11 @@
 <script lang="ts">
   import { toPng } from 'html-to-image';
   import type { LAGeographyResponse } from '$lib/api/laGeography';
-  import { formatNumber, formatDensity } from '$lib/utils/formatters';
+import { formatNumber, formatDensity } from '$lib/utils/formatters';
 
-  export let address: string;
-  export let lat: number;
-  export let lon: number;
-  export let geographyData: LAGeographyResponse;
+export let lat: number;
+export let lon: number;
+export let geographyData: LAGeographyResponse;
 
   let downloading = false;
   let showCard = false;
@@ -86,7 +85,7 @@
   <h3 class="text-xl font-semibold text-text mb-3">Share your results</h3>
 
   <div class="flex flex-wrap gap-2 mb-5 text-sm text-text">
-    <button
+    <!-- <button
       on:click={downloadCard}
       disabled={downloading}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/90 text-white hover:bg-primary transition-colors disabled:opacity-50"
@@ -95,7 +94,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
       </svg>
       {downloading ? 'Generating...' : 'Download Card'}
-    </button>
+    </button> -->
 
     <button
       on:click={shareOnTwitter}

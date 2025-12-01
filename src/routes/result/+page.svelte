@@ -58,10 +58,11 @@
           const geocodeResult = await reverseGeocode(lon, lat, PUBLIC_MAPBOX_ACCESS_TOKEN);
           if (geocodeResult.features.length > 0) {
             address = geocodeResult.features[0].place_name;
+            // console.log('Address:', address);
           }
         } catch (err) {
           console.error('Reverse geocode failed:', err);
-          address = formatCoordinates(lat, lon);
+          // address = formatCoordinates(lat, lon);
         }
       }
     } catch (err) {
@@ -98,11 +99,11 @@
     <!-- Header -->
     <div class="mb-8">
       <a href="/" class="text-primary hover:underline mb-2 inline-block">← Search again</a>
-      <h1 class="text-4xl font-bold text-text mb-2">Here’s where this place really is</h1>
+      <h1 class="text-4xl font-bold text-text mb-2">Where this place <em>really</em> is</h1>
       {#if address}
-        <p class="text-xl text-gray-600">{address}</p>
+        <p class="text-xl text-gray-600">{address.replace(/, United States/, '')}</p>
       {/if}
-      <p class="text-sm text-gray-500 mt-1">{formatCoordinates(lat, lon)}</p>
+      <p class="text-sm text-gray-500 mt-1 coordinates">Coordinates: {formatCoordinates(lat, lon)}</p>
     </div>
 
     <!-- Map -->
@@ -135,7 +136,7 @@
 
     <!-- Geography Cards -->
     <div class="mb-12">
-      <h2 class="text-2xl font-bold text-text mb-6">Where you are</h2>
+      <h2 class="text-2xl font-bold text-text mb-6">About this place</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {#if geographyData.layers.la_neighborhoods_comprehensive}
           {#if geographyData.place?.placeCategory === 'unincorporated_area'}
@@ -233,7 +234,6 @@
     <!-- Share Card -->
     <div class="mb-12">
       <ShareCard
-        {address}
         {lat}
         {lon}
         {geographyData}

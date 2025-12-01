@@ -112,7 +112,7 @@ export async function getLAGeography(
   }
 
   const rawData: RawAPIResponse = await response.json();
-  console.log('Raw API Response:', rawData);
+  // console.log('Raw API Response:', rawData);
   
   // Validate the response structure
   if (!rawData || rawData.status !== 'success' || !rawData.results) {
@@ -234,7 +234,7 @@ export async function getLAGeography(
     };
   }
 
-  console.log('Transformed data:', transformedData);
+  // console.log('Transformed data:', transformedData);
   
   return transformedData;
 }
