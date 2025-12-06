@@ -4,24 +4,25 @@
 </script>
 
 <svelte:head>
-  <title>What's My LA? – Figure out where you really live in Los Angeles</title>
+  <title>What's my Los Angeles? – Figure out where you really live</title>
   <meta
     name="description"
-    content="Not totally sure where you live in LA? Drop in an address and see the real neighborhood, city, council district, and public safety coverage for any spot in Los Angeles County."
+    content="Los Angeles County's geography is confusing. We're here to help."
   />
+
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://whatsmyla.com/" />
-  <meta property="og:title" content="What's My LA? – Figure out where you really live in Los Angeles" />
-  <meta property="og:description" content="Drop in an address and see the neighborhood, city, council district, and more for anywhere in Los Angeles County." />
+  <meta property="og:title" content="What's my Los Angeles? – Figure out where you really live" />
+  <meta property="og:description" content="Los Angeles County's geography is confusing. We're here to help." />
   <meta property="og:image" content="https://whatsmyla.com/sharecard.jpg" />
   
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://whatsmyla.com/" />
-  <meta property="twitter:title" content="What's My LA? – Figure out where you really live in Los Angeles" />
-  <meta property="twitter:description" content="Drop in an address and see the neighborhood, city, council district, and more for anywhere in Los Angeles County." />
+  <meta property="twitter:title" content="What's my Los Angeles? – Figure out where you really live" />
+  <meta property="twitter:description" content="Los Angeles County's geography is confusing. We're here to help." />
   <meta property="twitter:image" content="https://whatsmyla.com/sharecard.jpg" />
 </svelte:head>
 
@@ -37,7 +38,7 @@
         Discover <br class="sm:hidden" /><span class="text-primary">your</span> LA
       </h1>
       <p class="text-xl md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto">
-        The Los Angeles County's geography is confusing.<br class="sm:hidden" /> We're here to help.
+        Los Angeles County's geography is confusing.<br class="sm:hidden" /> We're here to help.
       </p>
 
       <AddressSearch />
