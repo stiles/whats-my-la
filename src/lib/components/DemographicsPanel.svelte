@@ -87,7 +87,7 @@
       <!-- Right: Bullet chart visualization -->
       <div class="bg-white rounded-lg border border-border-subtle p-4">
         <p class="text-sm text-text-muted mb-4">
-          <span class="font-semibold" style="background-color: #e5e7eb; padding: 2px 8px; border-radius: 4px;">{placeLabel}</span> compared to <span class="font-semibold text-white" style="background-color: #d83900; padding: 2px 8px; border-radius: 4px;">LA County</span>
+          <span class="font-semibold text-white" style="background-color: #d83900; padding: 2px 8px; border-radius: 4px;">{placeLabel}</span> compared to <span class="font-semibold" style="background-color: #e5e7eb; padding: 2px 8px; border-radius: 4px;">LA County</span>
         </p>
         
         <div class="space-y-4">
@@ -115,27 +115,27 @@
                     <div class="absolute top-0 bottom-0 w-[1px] bg-gray-300" style="left: 100%"></div> -->
                   </div>
                   
-                  <div class="relative">
-                    <!-- Place bar (lighter gray, taller background) -->
+                <div class="relative">
+                  <!-- County bar (lighter gray, taller background) -->
+                  <div 
+                    class="h-6 rounded relative"
+                    style="width: {countyPct}%; background-color: #e5e7eb"
+                  ></div>
+                  <!-- Place bar (red, thinner, overlaid) -->
+                  <div 
+                    class="absolute top-1/2 left-0 -translate-y-1/2 h-3 rounded"
+                    style="width: {placePct}%; background-color: #d83900"
+                  ></div>
+                  <!-- Percentage label with halo, positioned 5px from red bar -->
+                  {#if placePct > 15}
                     <div 
-                      class="h-6 rounded relative"
-                      style="width: {placePct}%; background-color: #e5e7eb"
-                    ></div>
-                    <!-- County bar (orange, thinner, overlaid) -->
-                    <div 
-                      class="absolute top-1/2 left-0 -translate-y-1/2 h-3 rounded"
-                      style="width: {countyPct}%; background-color: #d83900"
-                    ></div>
-                    <!-- Percentage label with halo, positioned 5px from red bar -->
-                    {#if placePct > 15}
-                      <div 
-                        class="absolute top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-800 whitespace-nowrap"
-                        style="left: calc({countyPct}% + 5px); text-shadow: 0 0 3px white, 0 0 3px white, 0 0 3px white"
-                      >
-                        {placePct.toFixed(1)}%
-                      </div>
-                    {/if}
-                  </div>
+                      class="absolute top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-800 whitespace-nowrap"
+                      style="left: calc({placePct}% + 5px); text-shadow: 0 0 3px white, 0 0 3px white, 0 0 3px white"
+                    >
+                      {placePct.toFixed(1)}%
+                    </div>
+                  {/if}
+                </div>
                 </div>
               </div>
             </div>
