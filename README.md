@@ -2,7 +2,7 @@
 
 A simple web app that helps users discover their Los Angeles in geographic context. Find a neighborhood, region, police division, council district and demographics for any address in LA County.
 
-**Soon to be live at**: [whatsmyla.com](https://whatsmyla.com)
+**Live at**: [whatsmyla.com](https://whatsmyla.com)
 
 ## Features
 
