@@ -1,5 +1,6 @@
 <script lang="ts">
   import AddressSearch from '$lib/components/AddressSearch.svelte';
+  import HeroMap from '$lib/components/HeroMap.svelte';
 </script>
 
 <svelte:head>
@@ -11,9 +12,13 @@
 </svelte:head>
 
 <div class="relative overflow-hidden">
-  <!-- Hero Section -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-    <div class="text-center">
+  <!-- Hero Section with background map -->
+  <section class="relative min-h-screen flex items-center">
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <HeroMap />
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
       <h1 class="text-5xl md:text-7xl font-bold text-text mb-6">
         Discover <span class="text-primary">your</span> LA
       </h1>
@@ -23,12 +28,12 @@
 
       <AddressSearch />
     </div>
-  </div>
+  </section>
 
   <!-- Features Section -->
   <div class="bg-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center text-text mb-12">What you'll learn</h2>
+      <h2 class="text-3xl font-bold text-center text-text mb-12">What you'll learn about your LA neighborhood</h2>
       
       <div class="grid md:grid-cols-3 gap-8">
         <div class="text-center p-6">
@@ -36,7 +41,7 @@
             <i class="fa-solid fa-city text-5xl text-primary"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Places</h3>
-          <p class="text-text-muted">Find out what your address is actually called — neighborhood, region and city — not just the ZIP on your mail.</p>
+          <p class="text-text-muted">Find out what your location is officially named, by neighborhood, region and city.</p>
         </div>
 
         <div class="text-center p-6">
@@ -44,7 +49,7 @@
             <i class="fa-solid fa-fire-extinguisher text-5xl text-secondary"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Public safety</h3>
-          <p class="text-text-muted">See which LAPD division and LAFD station cover you, plus other emergency service areas.</p>
+          <p class="text-text-muted">See which police division and fire station cover you, plus other emergency service areas.</p>
         </div>
 
         <div class="text-center p-6">
@@ -52,7 +57,7 @@
             <i class="fa-solid fa-people-group text-5xl text-accent"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Demographics</h3>
-          <p class="text-text-muted">Get a quick read on who lives around you — population, density and a basic demographic snapshot.</p>
+          <p class="text-text-muted">Get a quick read on who lives around you: population, density and a basic demographic snapshot.</p>
         </div>
       </div>
     </div>

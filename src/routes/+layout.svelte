@@ -6,9 +6,9 @@
 <div class="min-h-screen bg-background">
   <nav class="bg-footer shadow-md border-b border-gray-800 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
+      <div class="flex justify-between items-center h-12">
         <a href="/" class="flex items-center gap-2">
-          <span class="text-2xl font-bold text-primary">What's My LA?</span>
+          <span class="text-xl font-semibold text-white">What's My LA?</span>
         </a>
         <!-- <div class="text-sm text-gray-200">
           Where you really live
@@ -37,7 +37,7 @@
                 href="https://github.com/stiles/whats-my-la"
                 target="_blank"
                 rel="noopener"
-                class="text-primary hover:underline"
+                class="text-accent hover:underline"
               >
                 Read the code
               </a>
@@ -45,7 +45,7 @@
                 href="https://github.com/stiles/la-geography"
                 target="_blank"
                 rel="noopener"
-                class="text-primary hover:underline"
+                class="text-accent hover:underline"
               >
                 About the data
               </a>
@@ -69,7 +69,7 @@
                 href="https://www.buymeacoffee.com/mattstiles"
                 target="_blank"
                 rel="noopener"
-                class="text-primary hover:underline"
+                class="text-accent hover:underline"
               >
                 Support the project! 
               </a>
@@ -80,7 +80,7 @@
         <!-- Bottom line -->
         <div class="pt-4 border-t border-gray-800 text-xs text-gray-400 text-center md:text-left space-y-1">
           <p>
-            © 2025 <a href="https://mattstiles.me/" target="_blank" rel="noopener" class="text-primary hover:underline">Matt Stiles</a>
+            © 2025 <a href="https://mattstiles.me/" target="_blank" rel="noopener" class="text-accent hover:underline">Matt Stiles</a>
           </p>
         </div>
       </div>

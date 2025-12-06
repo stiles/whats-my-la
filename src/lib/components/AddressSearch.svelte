@@ -113,17 +113,17 @@
     <div class="mt-2 text-red-600 text-sm text-center">{error}</div>
   {/if}
 
-  <div class="mt-6 text-center">
+  <div class="mt-4 text-center">
     <button
       on:click={useCurrentLocation}
       disabled={loading}
-      class="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white rounded-full hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-muted border border-border-subtle rounded-full bg-white/80 hover:bg-surface-muted/40 hover:text-text transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
-      Use My Location
+      Use my location
     </button>
   </div>
 </div>
