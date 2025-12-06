@@ -9,6 +9,20 @@
     name="description"
     content="Not totally sure where you live in LA? Drop in an address and see the real neighborhood, city, council district, and public safety coverage for any spot in Los Angeles County."
   />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://whatsmyla.com/" />
+  <meta property="og:title" content="What's My LA? – Figure out where you really live in Los Angeles" />
+  <meta property="og:description" content="Drop in an address and see the neighborhood, city, council district, and more for anywhere in Los Angeles County." />
+  <meta property="og:image" content="https://whatsmyla.com/sharecard.jpg" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://whatsmyla.com/" />
+  <meta property="twitter:title" content="What's My LA? – Figure out where you really live in Los Angeles" />
+  <meta property="twitter:description" content="Drop in an address and see the neighborhood, city, council district, and more for anywhere in Los Angeles County." />
+  <meta property="twitter:image" content="https://whatsmyla.com/sharecard.jpg" />
 </svelte:head>
 
 <div class="relative overflow-hidden">
@@ -20,10 +34,10 @@
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
       <h1 class="text-5xl md:text-7xl font-bold text-text mb-6">
-        Discover <span class="text-primary">your</span> LA
+        Discover <br class="sm:hidden" /><span class="text-primary">your</span> LA
       </h1>
       <p class="text-xl md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto">
-        Drop in an address and see the neighborhood, city, police and fire coverage, council district, and more for anywhere in Los Angeles County.
+        The Los Angeles County's geography is confusing.<br class="sm:hidden" /> We're here to help.
       </p>
 
       <AddressSearch />
@@ -33,7 +47,7 @@
   <!-- Features Section -->
   <div class="bg-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center text-text mb-12">What you'll learn about your LA neighborhood</h2>
+      <h2 class="text-3xl font-bold text-center text-text mb-12">What you'll learn about a location</h2>
       
       <div class="grid md:grid-cols-3 gap-8">
         <div class="text-center p-6">
@@ -41,7 +55,7 @@
             <i class="fa-solid fa-city text-5xl text-primary"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Places</h3>
-          <p class="text-text-muted">Find out what your location is officially named, by neighborhood, region and city.</p>
+          <p class="text-text-muted">What the location is called — down to the region, city and neighborhood.</p>
         </div>
 
         <div class="text-center p-6">
@@ -49,7 +63,7 @@
             <i class="fa-solid fa-fire-extinguisher text-5xl text-secondary"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Public safety</h3>
-          <p class="text-text-muted">See which police division and fire station cover you, plus other emergency service areas.</p>
+          <p class="text-text-muted">Learn the police division and fire station, plus other emergency service areas.</p>
         </div>
 
         <div class="text-center p-6">
@@ -57,7 +71,7 @@
             <i class="fa-solid fa-people-group text-5xl text-accent"></i>
           </div>
           <h3 class="text-xl font-semibold mb-2">Demographics</h3>
-          <p class="text-text-muted">Get a quick read on who lives around you: population, density and a basic demographic snapshot.</p>
+          <p class="text-text-muted">Get a quick look at the population and demographics compared to LA County.</p>
         </div>
       </div>
     </div>

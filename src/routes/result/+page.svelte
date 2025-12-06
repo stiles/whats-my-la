@@ -24,6 +24,7 @@
   let lat = 0;
   let lon = 0;
   let outsideLACounty = false;
+  let placeHeadline = '';
 
   onMount(async () => {
     const latParam = $page.url.searchParams.get('lat');
@@ -73,6 +74,41 @@
     }
   });
 
+  // Build the place headline reactively based on geography data
+  $: {
+    if (outsideLACounty) {
+      placeHeadline = 'This place is outside Los Angeles County';
+    } else if (!geographyData) {
+      placeHeadline = '';
+    } else {
+      const neighborhood = geographyData.layers.la_neighborhoods_comprehensive?.name;
+      const city = geographyData.layers.la_neighborhoods_comprehensive?.type;
+      const placeCategory = geographyData.place?.placeCategory || null;
+
+      if (placeCategory === 'unincorporated_area') {
+        if (neighborhood) {
+          placeHeadline = `This place is in unincorporated ${neighborhood} in Los Angeles County`;
+        } else {
+          placeHeadline = 'This place is in an unincorporated part of Los Angeles County';
+        }
+      } else if (placeCategory === 'standalone_city') {
+        if (neighborhood) {
+          placeHeadline = `This place is in the city of ${neighborhood} in Los Angeles County`;
+        } else {
+          placeHeadline = 'This place is in a city in Los Angeles County';
+        }
+      } else if (neighborhood && city) {
+        placeHeadline = `This place is in the ${neighborhood} neighborhood of ${city}`;
+      } else if (neighborhood) {
+        placeHeadline = `This place is in the ${neighborhood} neighborhood`;
+      } else if (city) {
+        placeHeadline = `This place is in ${city}`;
+      } else {
+        placeHeadline = 'Where this place fits in Los Angeles County';
+      }
+    }
+  }
+
   // Icon SVGs
   const icons = {
     neighborhood: '<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>',
@@ -99,11 +135,17 @@
     <!-- Header -->
     <div class="mb-8">
       <a href="/" class="text-primary hover:underline mb-2 inline-block">← Search again</a>
-      <h1 class="text-4xl font-bold text-text mb-2">Where this place <em>really</em> is</h1>
+      <h1 class="text-3xl md:text-4xl font-bold text-text mb-3">{placeHeadline}</h1>
       {#if address}
-        <p class="text-xl text-gray-600">{address.replace(/, United States/, '')}</p>
+        <p class="text-base text-gray-600">
+          <span class="font-semibold">Address:</span>
+          {address.replace(/, United States$/, '')}
+        </p>
       {/if}
-      <p class="text-sm text-gray-500 mt-1 coordinates">Coordinates: {formatCoordinates(lat, lon)}</p>
+      <p class="text-sm text-gray-500 mt-1 coordinates">
+        <span class="font-semibold">Coordinates:</span>
+        {formatCoordinates(lat, lon)}
+      </p>
     </div>
 
     <!-- Map -->
@@ -170,7 +212,7 @@
           <GeographyCard
             icon={icons.neighborhoodCouncil}
             label="Neighborhood Council"
-            value={geographyData.layers.la_neighborhood_councils.name}
+            value={geographyData.layers.la_neighborhood_councils.name.replace(/NC/, '').replace('N/A (outside LA City)', 'Outside LA City')}
           />
         {/if}
 
@@ -186,8 +228,7 @@
           <GeographyCard
             icon={icons.police}
             label="Police Division"
-            value={geographyData.layers.lapd_divisions.aprec}
-            subtitle="LAPD"
+            value={geographyData.layers.lapd_divisions.aprec.replace('N/A (outside LAPD jurisdiction)', 'LA County Sheriff')}
           />
         {/if}
 
@@ -195,7 +236,7 @@
           <GeographyCard
             icon={icons.fire}
             label="Fire Station"
-            value={geographyData.layers.lafd_station_boundaries.name}
+            value={geographyData.layers.lafd_station_boundaries.name.replace('N/A (LACOFD jurisdiction)', 'LA County Fire')}
             subtitle="LAFD"
           />
         {/if}
@@ -213,7 +254,7 @@
           <GeographyCard
             icon={icons.school}
             label="School District"
-            value={geographyData.layers.la_county_school_districts.label}
+            value={geographyData.layers.la_county_school_districts.label.replace(/USD/, '')}
           />
         {/if}
       </div>
@@ -221,7 +262,7 @@
 
     <!-- Demographics -->
     {#if geographyData.demographics}
-      <div class="mb-12">
+      <div class="mb-12 max-w-5xl">
         <DemographicsPanel
           neighborhood={geographyData.demographics.neighborhood}
           city={geographyData.demographics.city}

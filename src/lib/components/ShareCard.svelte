@@ -42,9 +42,19 @@ export let geographyData: LAGeographyResponse;
     }
   }
 
+  // Calculate approximate centroid by taking the coordinates but rounding to ~neighborhood level
+  // This provides general location without exposing exact address
+  function getApproximateCoords() {
+    // Round to 2 decimal places (~1km precision) instead of full precision
+    const approxLat = Math.round(lat * 100) / 100;
+    const approxLon = Math.round(lon * 100) / 100;
+    return { lat: approxLat, lon: approxLon };
+  }
+
   function shareOnTwitter() {
+    const { lat: approxLat, lon: approxLon } = getApproximateCoords();
     const text = `Check out my LA geography! I'm in ${geographyData.layers.la_neighborhoods_comprehensive?.name || 'LA'} 📍`;
-    const url = `${window.location.origin}/result?lat=${lat}&lon=${lon}`;
+    const url = `${window.location.origin}/result?lat=${approxLat}&lon=${approxLon}`;
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
       '_blank'
@@ -52,7 +62,8 @@ export let geographyData: LAGeographyResponse;
   }
 
   function copyLink() {
-    const url = `${window.location.origin}/result?lat=${lat}&lon=${lon}`;
+    const { lat: approxLat, lon: approxLon } = getApproximateCoords();
+    const url = `${window.location.origin}/result?lat=${approxLat}&lon=${approxLon}`;
     navigator.clipboard.writeText(url).then(() => {
       alert('Link copied to clipboard!');
     });
@@ -103,7 +114,7 @@ export let geographyData: LAGeographyResponse;
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
       </svg>
-      Share on Twitter
+      Share
     </button>
 
     <button
@@ -113,7 +124,7 @@ export let geographyData: LAGeographyResponse;
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
-      Copy Link
+      Copy
     </button>
   </div>
 
