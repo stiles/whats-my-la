@@ -54,7 +54,7 @@
   />
 </svelte:head>
 
-<div class="relative w-full h-screen">
+<div class="relative w-full h-[calc(100vh-3rem)]">
 
   <!-- Center instructional hint (subtle and auto-dismissing) -->
   {#if showHint}
