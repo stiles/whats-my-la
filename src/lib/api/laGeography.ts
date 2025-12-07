@@ -35,7 +35,8 @@ interface RawAPIResponse {
     };
     fire?: {
       agency: string;
-      station?: string;
+      station?: string | null;
+      type?: 'contract' | 'direct' | 'municipal';
     };
     representation?: {
       type: string;
@@ -95,7 +96,8 @@ export interface LAGeographyResponse {
   };
   fire?: {
     agency: string;
-    station?: string;
+    station?: string | null;
+    type?: 'contract' | 'direct' | 'municipal';
   };
   representation?: {
     type: string;

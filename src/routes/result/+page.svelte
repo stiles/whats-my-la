@@ -238,8 +238,10 @@
           <GeographyCard
             icon={icons.fire}
             label="Fire Protection"
-            value={geographyData.fire.station || geographyData.fire.agency}
-            subtitle={geographyData.fire.agency}
+            value={geographyData.fire.station ? `Station ${geographyData.fire.station}` : geographyData.fire.agency}
+            subtitle={geographyData.fire.type === 'contract' 
+              ? `${geographyData.fire.agency} (via contract)` 
+              : geographyData.fire.agency}
           />
         {/if}
 
