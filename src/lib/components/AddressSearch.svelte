@@ -84,11 +84,11 @@
       on:focus={() => (showSuggestions = suggestions.length > 0)}
       on:blur={handleBlur}
       placeholder="Enter an LA address or neighborhood..."
-      class="w-full px-6 py-4 text-sm rounded-full border-2 border-border-subtle focus:border-primary focus:outline-none shadow-lg transition-all bg-surface text-text"
+      class="w-full px-6 py-4 md:px-7 md:py-5 text-sm md:text-base rounded-full border-2 border-border-subtle focus:border-primary focus:outline-none shadow-xl transition-all bg-surface text-text"
     />
 
     {#if loading}
-      <div class="absolute right-6 top-1/2 -translate-y-1/2">
+      <div class="absolute right-6 md:right-7 top-1/2 -translate-y-1/2">
         <div class="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
       </div>
     {/if}

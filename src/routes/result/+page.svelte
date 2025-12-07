@@ -126,9 +126,9 @@
   <title>{address || 'Results'} - What's My LA?</title>
 </svelte:head>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
   {#if loading}
-    <div class="flex flex-col items-center justify-center py-20">
+    <div class="flex flex-col items-center justify-center py-40">
       <div class="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
       <p class="text-gray-600">Figuring out where this spot fits in LA…</p>
     </div>
