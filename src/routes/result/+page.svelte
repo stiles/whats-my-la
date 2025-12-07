@@ -220,7 +220,7 @@
           <GeographyCard
             icon={icons.region}
             label="LA County Region"
-            value={geographyData.layers.la_regions.name}
+            value={geographyData.layers.la_regions.name.replace('La', 'LA')}
           />
         {/if}
 
@@ -228,7 +228,7 @@
           <GeographyCard
             icon={icons.police}
             label="Police Division"
-            value={geographyData.layers.lapd_divisions.aprec.replace('N/A (outside LAPD jurisdiction)', 'LA County Sheriff')}
+            value={geographyData.layers.lapd_divisions.aprec}
           />
         {/if}
 
@@ -236,7 +236,7 @@
           <GeographyCard
             icon={icons.fire}
             label="Fire Station"
-            value={geographyData.layers.lafd_station_boundaries.name.replace('N/A (LACOFD jurisdiction)', 'LA County Fire')}
+            value={geographyData.layers.lafd_station_boundaries.name}
             subtitle="LAFD"
           />
         {/if}
