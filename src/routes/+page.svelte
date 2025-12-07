@@ -38,10 +38,41 @@
         Discover <br class="sm:hidden" /><span class="text-primary">your</span> LA
       </h1>
       <p class="text-xl md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto">
-        Los Angeles County's geography is confusing.<br class="sm:hidden" /> We're here to help.
+        Los Angeles County's geography is confusing. We're here to help.
       </p>
 
       <AddressSearch />
+
+      <div class="text-sm text-text-muted mt-8 max-w-2xl mx-auto">
+        <p class="mb-3">
+          Not sure where to search?
+        </p>
+        
+        <a href="/explore" class="inline-block text-primary hover:underline font-semibold mb-3">
+          Explore locations on a map →
+        </a>
+        
+        <!-- <p class="mb-2">Or try these:</p> -->
+        
+        <!-- Desktop: horizontal with dots -->
+        <!-- <div class="hidden sm:flex flex-wrap gap-x-3 gap-y-1 justify-center">
+          <a href="/result?lat=34.090767&lon=-118.366691&address=West%20Hollywood%2C%20California" class="text-primary hover:underline">West Hollywood</a>
+          <span class="text-gray-400">·</span>
+          <a href="/result?lat=33.97639&lon=-118.459079&address=Marina%20del%20Rey%2C%20California" class="text-primary hover:underline">Marina del Rey</a>
+          <span class="text-gray-400">·</span>
+          <a href="/result?lat=34.046113&lon=-118.524258&address=Pacific%20Palisades%2C%20California" class="text-primary hover:underline">Pacific Palisades</a>
+          <span class="text-gray-400">·</span>
+          <a href="/result?lat=34.022394&lon=-118.16774&address=East%20Los%20Angeles%2C%20California" class="text-primary hover:underline">East Los Angeles</a>
+        </div> -->
+        
+        <!-- Mobile: stacked list -->
+        <!-- <div class="flex flex-col gap-2 sm:hidden">
+          <a href="/result?lat=34.090767&lon=-118.366691&address=West%20Hollywood%2C%20California" class="text-primary hover:underline">West Hollywood</a>
+          <a href="/result?lat=33.97639&lon=-118.459079&address=Marina%20del%20Rey%2C%20California" class="text-primary hover:underline">Marina del Rey</a>
+          <a href="/result?lat=34.046113&lon=-118.524258&address=Pacific%20Palisades%2C%20California" class="text-primary hover:underline">Pacific Palisades</a>
+          <a href="/result?lat=34.022394&lon=-118.16774&address=East%20Los%20Angeles%2C%20California" class="text-primary hover:underline">East Los Angeles</a>
+        </div> -->
+      </div>
     </div>
   </section>
 
