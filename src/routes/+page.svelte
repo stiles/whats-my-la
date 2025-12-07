@@ -38,7 +38,7 @@
         Discover <br class="sm:hidden" /><span class="text-primary">your</span> LA
       </h1>
       <p class="text-xl md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto">
-        Los Angeles County's geography is confusing. We're here to help.
+        Los Angeles County's geography is confusing. <br class="sm:hidden" /> We're here to help.
       </p>
 
       <AddressSearch />
