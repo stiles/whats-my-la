@@ -18,15 +18,30 @@ interface RawAPIResponse {
     neighborhood?: string;
     region?: string;
     city?: string;
-    lapd_division?: string;
-    lapd_bureau?: string;
-    lafd_station?: string;
-    city_council?: string;
-    city_council_district?: string;
+    zip_code?: string;
+    supervisor_district?: string;
     neighborhood_council?: string;
+    council_district?: string | null;
     school_district?: string;
     neighborhood_demographics?: SimpleAPIDemographics;
     city_demographics?: SimpleAPIDemographics;
+    // New structured fields
+    law_enforcement?: {
+      agency: string;
+      division?: string;
+      bureau?: string;
+      station?: string;
+      type?: string;
+    };
+    fire?: {
+      agency: string;
+      station?: string;
+    };
+    representation?: {
+      type: string;
+      district: string;
+      representative?: string | null;
+    };
     // governance / type metadata
     neighborhood_type?: string;
     neighborhood_city_slug?: string | null;
@@ -61,23 +76,7 @@ export interface LAGeographyResponse {
       name: string;
       area_sqmi?: number;
     };
-    lapd_divisions?: {
-      aprec: string;
-      area_sqmi?: number;
-    };
-    lapd_bureaus?: {
-      name: string;
-      area_sqmi?: number;
-    };
-    lafd_station_boundaries?: {
-      name: string;
-      area_sqmi?: number;
-    };
-    la_city_council_districts?: {
-      district_name: string;
-      district: string;
-      area_sqmi?: number;
-    };
+    zip_code?: string;
     la_neighborhood_councils?: {
       name: string;
       area_sqmi?: number;
@@ -86,6 +85,22 @@ export interface LAGeographyResponse {
       label: string;
       area_sqmi?: number;
     };
+  };
+  law_enforcement?: {
+    agency: string;
+    division?: string;
+    bureau?: string;
+    station?: string;
+    type?: string;
+  };
+  fire?: {
+    agency: string;
+    station?: string;
+  };
+  representation?: {
+    type: string;
+    district: string;
+    representative?: string | null;
   };
   demographics?: {
     neighborhood?: SimpleDemographics;
@@ -143,33 +158,9 @@ export async function getLAGeography(
     };
   }
 
-  // Map LAPD division
-  if (rawData.results.lapd_division) {
-    transformedData.layers.lapd_divisions = {
-      aprec: rawData.results.lapd_division
-    };
-  }
-
-  // Map LAPD bureau
-  if (rawData.results.lapd_bureau) {
-    transformedData.layers.lapd_bureaus = {
-      name: rawData.results.lapd_bureau
-    };
-  }
-
-  // Map LAFD station
-  if (rawData.results.lafd_station) {
-    transformedData.layers.lafd_station_boundaries = {
-      name: rawData.results.lafd_station
-    };
-  }
-
-  // Map city council
-  if (rawData.results.city_council || rawData.results.city_council_district) {
-    transformedData.layers.la_city_council_districts = {
-      district_name: rawData.results.city_council || 'Unknown',
-      district: rawData.results.city_council_district || 'Unknown'
-    };
+  // Map ZIP code
+  if (rawData.results.zip_code) {
+    transformedData.layers.zip_code = rawData.results.zip_code;
   }
 
   // Map neighborhood council (LA City only)
@@ -184,6 +175,21 @@ export async function getLAGeography(
     transformedData.layers.la_county_school_districts = {
       label: rawData.results.school_district
     };
+  }
+
+  // Map law enforcement (new structured field)
+  if (rawData.results.law_enforcement) {
+    transformedData.law_enforcement = rawData.results.law_enforcement;
+  }
+
+  // Map fire (new structured field)
+  if (rawData.results.fire) {
+    transformedData.fire = rawData.results.fire;
+  }
+
+  // Map political representation (new structured field)
+  if (rawData.results.representation) {
+    transformedData.representation = rawData.results.representation;
   }
 
   // Map demographics

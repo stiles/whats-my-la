@@ -118,6 +118,7 @@
     council: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>',
     school: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>',
     neighborhoodCouncil: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5 21a7 7 0 0114 0H5z" /></svg>',
+    zipCode: '<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',
   };
 </script>
 
@@ -224,29 +225,38 @@
           />
         {/if}
 
-        {#if geographyData.layers.lapd_divisions}
+        {#if geographyData.layers.zip_code}
+          <GeographyCard
+            icon={icons.zipCode}
+            label="ZIP Code"
+            value={geographyData.layers.zip_code}
+          />
+        {/if}
+
+        {#if geographyData.law_enforcement}
           <GeographyCard
             icon={icons.police}
-            label="Police Division"
-            value={geographyData.layers.lapd_divisions.aprec}
+            label="Law Enforcement"
+            value={geographyData.law_enforcement.station || geographyData.law_enforcement.agency}
+            subtitle={geographyData.law_enforcement.division ? `${geographyData.law_enforcement.agency} - ${geographyData.law_enforcement.division}` : geographyData.law_enforcement.agency}
           />
         {/if}
 
-        {#if geographyData.layers.lafd_station_boundaries}
+        {#if geographyData.fire}
           <GeographyCard
             icon={icons.fire}
-            label="Fire Station"
-            value={geographyData.layers.lafd_station_boundaries.name}
-            subtitle="LAFD"
+            label="Fire Protection"
+            value={geographyData.fire.station || geographyData.fire.agency}
+            subtitle={geographyData.fire.agency}
           />
         {/if}
 
-        {#if geographyData.layers.la_city_council_districts}
+        {#if geographyData.representation}
           <GeographyCard
             icon={icons.council}
-            label="City Council"
-            value={geographyData.layers.la_city_council_districts.district_name}
-            subtitle={`District ${geographyData.layers.la_city_council_districts.district}`}
+            label={geographyData.representation.type === 'city_council' ? 'City Council' : 'County Supervisor'}
+            value={geographyData.representation.representative || `District ${geographyData.representation.district}`}
+            subtitle={geographyData.representation.representative ? `District ${geographyData.representation.district}` : 'LA County Board of Supervisors'}
           />
         {/if}
 
