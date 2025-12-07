@@ -225,14 +225,6 @@
           />
         {/if}
 
-        {#if geographyData.layers.zip_code}
-          <GeographyCard
-            icon={icons.zipCode}
-            label="ZIP Code"
-            value={geographyData.layers.zip_code}
-          />
-        {/if}
-
         {#if geographyData.law_enforcement}
           <GeographyCard
             icon={icons.police}
@@ -267,6 +259,14 @@
             value={geographyData.layers.la_county_school_districts.label.replace(/USD/, '')}
           />
         {/if}
+
+        <!-- {#if geographyData.layers.zip_code}
+          <GeographyCard
+            icon={icons.zipCode}
+            label="ZIP Code"
+            value={geographyData.layers.zip_code}
+          />
+        {/if} -->
       </div>
     </div>
 
