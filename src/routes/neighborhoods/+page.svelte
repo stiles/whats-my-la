@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
   import { page } from '$app/stores';
   import { replaceState } from '$app/navigation';
   import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
@@ -14,12 +14,8 @@
     type NeighborhoodFeature,
     type NeighborhoodType
   } from '$lib/api/neighborhoods';
-
-  const TYPE_COLORS: Record<NeighborhoodType, string> = {
-    'segment-of-a-city': '#d83900',
-    'standalone-city': '#00345b',
-    'unincorporated-area': '#b07a00'
-  };
+  import { TYPE_COLORS } from '$lib/colors';
+  import { LA_BASIN, LA_BASIN_PORTRAIT } from '$lib/mapViews';
   const TYPES = Object.keys(TYPE_COLORS) as NeighborhoodType[];
   // One-line plain-English explanation of what each type means for residents.
   const TYPE_BLURBS: Record<NeighborhoodType, string> = {
@@ -33,12 +29,8 @@
     'unincorporated-area': 'Unincorporated areas'
   };
   const LA_CENTER: [number, number] = [-118.2244, 34.023];
-  const LA_BASIN: [[number, number], [number, number]] = [
-    [-118.85, 33.72],
-    [-117.72, 34.32]
-  ];
-
   let mapContainer: HTMLDivElement;
+  let panelEl: HTMLElement;
   let map: mapboxgl.Map | null = null;
   let hoverPopup: mapboxgl.Popup | null = null;
 
@@ -82,11 +74,17 @@
     map.setFeatureState({ source: 'neighborhoods', id: slug }, state);
   }
 
-  // Leave room for the side panel (desktop) or bottom sheet (mobile).
+  const isDesktop = () => window.innerWidth >= 768;
+
+  // Leave room for the side panel (desktop) or bottom sheet (mobile). The sheet's
+  // height depends on its content, so measure what it actually covers.
   function panelPadding(): mapboxgl.PaddingOptions {
-    return window.innerWidth >= 768
-      ? { top: 60, bottom: 60, left: 380, right: 60 }
-      : { top: 70, bottom: 300, left: 30, right: 30 };
+    if (isDesktop()) return { top: 60, bottom: 60, left: 380, right: 60 };
+    const covered =
+      panelEl && mapContainer
+        ? mapContainer.getBoundingClientRect().bottom - panelEl.getBoundingClientRect().top
+        : 300;
+    return { top: 70, bottom: Math.max(covered, 0) + 16, left: 24, right: 24 };
   }
 
   function select(
@@ -103,11 +101,14 @@
       selectedPoint = opts.point ?? interiorPoint(feature.geometry);
       url.searchParams.set('n', feature.properties.slug);
       if (opts.fly && map) {
-        map.fitBounds(getBounds(feature.geometry), {
-          padding: panelPadding(),
-          maxZoom: 14,
-          duration: 800
-        });
+        // Wait for the panel to re-render at its new size before measuring it.
+        tick().then(() =>
+          map?.fitBounds(getBounds(feature.geometry), {
+            padding: panelPadding(),
+            maxZoom: 14,
+            duration: 800
+          })
+        );
       }
     } else {
       selectedPoint = null;
@@ -145,8 +146,9 @@
     mapboxgl.accessToken = PUBLIC_MAPBOX_ACCESS_TOKEN;
     map = new mapboxgl.Map({
       container: mapContainer,
-      // Gray monochrome basemap (same as the home hero) so boundary colors stand out.
-      style: 'mapbox://styles/stiles/cmiuh91nz003q01su2wd5b64l',
+      // "Super clean" gray basemap: no place/road labels or admin lines, so the
+      // boundary colors and our own labels carry the map.
+      style: 'mapbox://styles/stiles/cmwxo8pt600il01rh79z51u0u',
       center: LA_CENTER,
       zoom: 9,
       attributionControl: true
@@ -195,6 +197,23 @@
         ...TYPES.flatMap((t) => [t, TYPE_COLORS[t]]),
         '#666'
       ];
+      // Paint value by interaction state: selected, hovered, or neither.
+      const byState = (selected: number, hover: number, base: number): mapboxgl.ExpressionSpecification => [
+        'case',
+        ['boolean', ['feature-state', 'selected'], false],
+        selected,
+        ['boolean', ['feature-state', 'hover'], false],
+        hover,
+        base
+      ];
+      // Boundaries stay faint at county scale and strengthen as you zoom in, while
+      // hover and selection stay strong at every zoom. (Mapbox only allows zoom at
+      // the top level of an expression, so state goes inside each stop.)
+      const atZoom = (
+        low: mapboxgl.ExpressionSpecification,
+        high: mapboxgl.ExpressionSpecification
+      ): mapboxgl.ExpressionSpecification => ['interpolate', ['linear'], ['zoom'], 8.5, low, 11.5, high];
+
       // The basemap is Mapbox Standard (an import), so ordering uses slots: fills
       // and outlines go in 'middle' (under basemap labels), our labels in 'top'.
       // Basemap place labels are hidden here because they don't follow these
@@ -209,14 +228,7 @@
           source: 'neighborhoods',
           paint: {
             'fill-color': colorByType,
-            'fill-opacity': [
-              'case',
-              ['boolean', ['feature-state', 'selected'], false],
-              0.22,
-              ['boolean', ['feature-state', 'hover'], false],
-              0.2,
-              0.08
-            ]
+            'fill-opacity': atZoom(byState(0.3, 0.24, 0.14), byState(0.22, 0.18, 0.08))
           }
         }
       );
@@ -228,17 +240,8 @@
           source: 'neighborhoods',
           paint: {
             'line-color': colorByType,
-            'line-opacity': ['case', ['boolean', ['feature-state', 'selected'], false], 1, 0.7],
-            // Mapbox only allows zoom at the top level, so state goes inside each stop.
-            'line-width': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              8,
-              ['case', ['boolean', ['feature-state', 'selected'], false], 2.5, ['boolean', ['feature-state', 'hover'], false], 1.5, 0.5],
-              12,
-              ['case', ['boolean', ['feature-state', 'selected'], false], 3.5, ['boolean', ['feature-state', 'hover'], false], 2.5, 1.2]
-            ]
+            'line-opacity': atZoom(byState(1, 0.9, 0.3), byState(1, 1, 0.75)),
+            'line-width': atZoom(byState(2.5, 1.5, 0.4), byState(3.5, 2.5, 1.2))
           }
         }
       );
@@ -247,7 +250,10 @@
         type: 'symbol',
         slot: 'top',
         source: 'neighborhood-labels',
-        // When labels collide, larger areas win (lower sort key = higher priority).
+        // Hidden at county scale (search and the hover tooltip name things there);
+        // fades in around neighborhood scale. When labels collide, larger areas
+        // win (lower sort key = higher priority).
+        minzoom: 9.8,
         layout: {
           'text-field': ['get', 'name'],
           'text-font': ['Inter Medium', 'Arial Unicode MS Regular'],
@@ -258,7 +264,8 @@
         paint: {
           'text-color': '#1f2937',
           'text-halo-color': 'rgba(255,255,255,0.9)',
-          'text-halo-width': 1.5
+          'text-halo-width': 1.5,
+          'text-opacity': ['interpolate', ['linear'], ['zoom'], 9.8, 0, 10.6, 1]
         }
       });
 
@@ -298,8 +305,8 @@
       } else {
         // Frame the populated basin (Malibu to Pomona, Palos Verdes to the foothills)
         // rather than the whole county, which Catalina and the Antelope Valley shrink.
-        map.fitBounds(LA_BASIN, {
-          padding: { ...panelPadding(), bottom: window.innerWidth >= 768 ? 40 : 60 },
+        map.fitBounds(isDesktop() ? LA_BASIN : LA_BASIN_PORTRAIT, {
+          padding: isDesktop() ? { ...panelPadding(), bottom: 40 } : panelPadding(),
           duration: 0
         });
       }
@@ -328,6 +335,7 @@
 
   <!-- Control panel: top-left card on desktop, bottom sheet on mobile -->
   <aside
+    bind:this={panelEl}
     class="absolute z-10 left-2 right-2 bottom-8 md:bottom-auto md:right-auto md:top-4 md:left-4 md:w-[340px]
            bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-border-subtle
            max-h-[55vh] md:max-h-[calc(100%-4rem)] overflow-y-auto"
