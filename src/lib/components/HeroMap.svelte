@@ -10,7 +10,7 @@
   const LA_CENTER: [number, number] = [-118.2614, 33.9109];
   const LA_ZOOM = 10.31;
   // Narrow screens: shift west and zoom out so the Westside coastline stays in view.
-  const LA_CENTER_MOBILE: [number, number] = [-118.37, 33.95];
+  const LA_CENTER_MOBILE: [number, number] = [-118.37, 34.01];
   const LA_ZOOM_MOBILE = 9.5;
 
   onMount(() => {

@@ -14,7 +14,7 @@
 
     map = new mapboxgl.Map({
       container: mapContainer,
-      style: 'mapbox://styles/stiles/cmim06vgu00fw01snabwaggb8',
+      style: 'mapbox://styles/stiles/cmwxn586f00iv01srax141zqj',
       center: [-118.2244, 34.023], // LA center
       zoom: 9,
       attributionControl: true

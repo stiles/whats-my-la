@@ -1,4 +1,5 @@
 <script>
+  import '@fontsource-variable/inter/opsz.css';
   import '../app.css';
   import '@fortawesome/fontawesome-free/css/all.min.css';
 </script>
@@ -8,7 +9,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-12">
         <a href="/" class="flex items-center gap-2">
-          <span class="text-xl font-semibold text-white">What's My LA?</span>
+          <span class="text-xl font-semibold tracking-tight text-white">What’s My LA?</span>
         </a>
         <div class="flex items-center gap-4 text-sm">
           <a href="/explore" class="text-gray-200 hover:text-white">Explore</a>

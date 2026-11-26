@@ -19,7 +19,7 @@
 
     map = new mapboxgl.Map({
       container: mapContainer,
-      style: 'mapbox://styles/stiles/cmim06vgu00fw01snabwaggb8',
+      style: 'mapbox://styles/stiles/cmwxn586f00iv01srax141zqj',
       center: [lon, lat],
       zoom: 13,
       attributionControl: true
@@ -73,6 +73,7 @@
           map!.addLayer({
             id: fillLayerId,
             type: 'fill',
+            slot: 'middle', // under the basemap's labels (Mapbox Standard)
             source: sourceId,
             paint: {
               'fill-color': '#d83900',
@@ -85,6 +86,7 @@
           map!.addLayer({
             id: lineLayerId,
             type: 'line',
+            slot: 'middle', // under the basemap's labels (Mapbox Standard)
             source: sourceId,
             paint: {
               'line-color': '#d83900',

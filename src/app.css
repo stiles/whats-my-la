@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 @theme {
+  /* Self-hosted Inter (variable, with optical sizing) to match the map labels.
+     System fonts are the fallback while it loads. */
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
   /* Core palette: sunset + harbor, WCAG-friendly */
   --color-primary: #d83900;       /* main orange */
   --color-secondary: #00345b;     /* deep navy for header / CTAs */
@@ -21,4 +26,10 @@
   font-size: 0.7rem;
   color: #858585;
   margin-top: 0.5rem;
+}
+@layer base {
+  /* Avoid one-word last lines in body copy. */
+  p {
+    text-wrap: pretty;
+  }
 }
