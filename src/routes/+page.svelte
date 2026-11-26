@@ -33,25 +33,31 @@
       <HeroMap />
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
-      <h1 class="text-5xl md:text-7xl font-bold text-text mb-6" style="text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(255, 255, 255, 0.9)">
-        Discover <br class="sm:hidden" /><span class="text-primary">your</span> LA
+    <!-- Soft fade so the decorative map recedes behind the text -->
+    <div
+      class="absolute inset-0 z-0 pointer-events-none"
+      style="background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(245,245,245,0.75) 0%, rgba(245,245,245,0.35) 45%, rgba(245,245,245,0) 75%)"
+    ></div>
+
+    <div class="relative z-10 w-full max-w-3xl mx-auto px-5 sm:px-6 py-20 md:py-32 text-center">
+      <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-text text-balance">
+        Discover <span class="text-primary">your</span> LA
       </h1>
-      <p class="text-xl md:text-2xl text-text-muted mb-12 max-w-3xl mx-auto" style="text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.8), 0 1px 3px rgba(255, 255, 255, 0.9)">
-        Los Angeles County's geography is confusing. <br class="sm:hidden" /> We're here to help.
+      <p class="mt-5 text-lg md:text-2xl text-text-muted text-balance">
+        Los Angeles County’s geography is confusing. We’re here to help.
       </p>
 
-      <div class="max-w-3xl mx-auto">
+      <div class="mt-10">
         <AddressSearch />
       </div>
 
-      <div class="text-sm text-text-muted mt-6 max-w-2xl mx-auto">
-        <p class="mb-2" style="text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 1px 2px rgba(255, 255, 255, 0.9)">
-          Not sure where to search?
-        </p>
-        
-        <a href="/explore" class="inline-flex items-center gap-1 text-base font-semibold text-primary hover:underline bg-white/70 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-lg">
-          Explore locations on a map →
+      <div class="mt-6 mx-auto max-w-xs sm:max-w-none flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2">
+        <span class="text-sm text-text-muted sm:mr-1">Or explore</span>
+        <a href="/explore" class="hero-chip">
+          <i class="fa-solid fa-hand-pointer text-primary"></i> Pick a spot on a map
+        </a>
+        <a href="/neighborhoods" class="hero-chip">
+          <i class="fa-solid fa-draw-polygon text-primary"></i> Browse neighborhoods
         </a>
       </div>
     </div>
@@ -115,3 +121,25 @@
     </div>
   </div> -->
 </div>
+
+<style>
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border-subtle);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .hero-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+</style>
