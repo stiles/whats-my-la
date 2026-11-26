@@ -6,20 +6,21 @@ A simple web app that helps users discover their Los Angeles in geographic conte
 
 ## Features
 
-- **Address Search**: Find any LA address with autocomplete
-- **Comprehensive Geography**: See all geographic layers for your location
-  - Neighborhood and region
-  - Police division and fire station
-  - City council district and school district
-- **Demographics**: Population, density, and racial/ethnic breakdown from 2020 Census
-- **Shareable Cards**: Generate beautiful cards to share on social media
-- **Mobile-First**: Works perfectly on all devices
+- **Address Search**: Find any LA County address, neighborhood, city or ZIP code with autocomplete, or use your location
+- **Explore and browse**: Tap any spot on a map, or browse every neighborhood, city and unincorporated area
+- **Geography for a location**:
+  - Neighborhood, city, neighborhood council and region
+  - Police division or station and fire station
+  - City council member, county supervisor district and school district
+- **Demographics**: Racial and ethnic makeup compared with LA County, from the 2020 Census
+- **Shareable links**: Result pages are rendered on the server, so link previews name the place
 
 ## Tech Stack
 
-- **Framework**: SvelteKit
-- **Styling**: Tailwind CSS
-- **Geocoding**: Mapbox Geocoding API
+- **Framework**: SvelteKit (Svelte 5), deployed with `@sveltejs/adapter-vercel`
+- **Styling**: Tailwind CSS v4 (theme tokens in `src/app.css`, mirrored for map code in `src/lib/colors.ts`)
+- **Maps and geocoding**: Mapbox GL JS and the Mapbox Geocoding API
+- **Tests**: Vitest, plus `svelte-check`; both run in GitHub Actions
 - **Data API**: [LA Geography API](https://api.stilesdata.com/la-geography/lookup)
 - **Deployment**: Vercel
 
@@ -64,6 +65,13 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Check and test
+
+```bash
+npm run check
+npm test
+```
 
 ### Build for Production
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Meta, { SITE_URL } from '$lib/components/Meta.svelte';
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
@@ -10,8 +11,8 @@
   let mapContainer: HTMLDivElement;
   let map: mapboxgl.Map | null = null;
   // Touch screens have no hover; say "Tap" there and "Click" elsewhere.
-  let touch = false;
-  let lookingUp = false;
+  let touch = $state(false);
+  let lookingUp = $state(false);
 
   onMount(() => {
     touch = window.matchMedia('(hover: none)').matches;
@@ -45,13 +46,11 @@
   });
 </script>
 
-<svelte:head>
-  <title>Explore Los Angeles - What's My LA?</title>
-  <meta
-    name="description"
-    content="Tap or click anywhere on the map to explore Los Angeles County's neighborhoods, cities, and geographic layers."
-  />
-</svelte:head>
+<Meta
+  title="Explore Los Angeles – What's My LA?"
+  description="Tap or click anywhere on the map to explore Los Angeles County's neighborhoods, cities, and geographic layers."
+  url={`${SITE_URL}/explore`}
+/>
 
 <div class="relative w-full h-[calc(100vh-3rem)]">
   <div bind:this={mapContainer} class="w-full h-full"></div>
