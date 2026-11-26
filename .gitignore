@@ -11,3 +11,9 @@ vite.config.ts.timestamp-*
 
 DEPLOYMENT.md
 NEXT_STEPS.md
+
+# /brag launch video renders
+brag-output/
+
+# Vercel CLI project link
+.vercel/
