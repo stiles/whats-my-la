@@ -1,6 +1,7 @@
 <script lang="ts">
+  import Meta, { SITE_URL } from '$lib/components/Meta.svelte';
   import { onMount, onDestroy, tick } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
   import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
   import mapboxgl from 'mapbox-gl';
@@ -34,26 +35,27 @@
   let map: mapboxgl.Map | null = null;
   let hoverPopup: mapboxgl.Popup | null = null;
 
-  let features: NeighborhoodFeature[] = [];
+  // Raw (not deep-proxied): large GeoJSON, replaced wholesale, compared by identity.
+  let features = $state.raw<NeighborhoodFeature[]>([]);
   let bySlug = new Map<string, NeighborhoodFeature>();
-  let loadError = '';
+  let loadError = $state('');
   let ready = false;
 
-  let selected: NeighborhoodFeature | null = null;
+  let selected = $state.raw<NeighborhoodFeature | null>(null);
   // Point used for the full lookup: where the user clicked, or a guaranteed interior point.
-  let selectedPoint: [number, number] | null = null;
+  let selectedPoint = $state<[number, number] | null>(null);
   let hoveredSlug: string | null = null;
 
-  let query = '';
-  let visibleTypes = new Set<NeighborhoodType>(TYPES);
-  let counts: Record<NeighborhoodType, number> = {
+  let query = $state('');
+  let visibleTypes = $state(new Set<NeighborhoodType>(TYPES));
+  let counts: Record<NeighborhoodType, number> = $state({
     'segment-of-a-city': 0,
     'standalone-city': 0,
     'unincorporated-area': 0
-  };
+  });
 
-  $: matches =
-    query.trim().length < 2
+  let matches =
+    $derived(query.trim().length < 2
       ? []
       : features
           .filter((f) => f.properties.name.toLowerCase().includes(query.trim().toLowerCase()))
@@ -63,11 +65,11 @@
             const bStarts = b.properties.name.toLowerCase().startsWith(q) ? 0 : 1;
             return aStarts - bStarts || a.properties.name.localeCompare(b.properties.name);
           })
-          .slice(0, 8);
+          .slice(0, 8));
 
-  $: lookupHref = selectedPoint
+  let lookupHref = $derived(selectedPoint
     ? `/result?lat=${selectedPoint[1].toFixed(6)}&lon=${selectedPoint[0].toFixed(6)}`
-    : '#';
+    : '#');
 
   function setFeatureState(slug: string | null, state: Record<string, boolean>) {
     if (!map || !slug) return;
@@ -95,7 +97,7 @@
     selected = feature;
     query = '';
 
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     if (feature) {
       setFeatureState(feature.properties.slug, { selected: true });
       selectedPoint = opts.point ?? interiorPoint(feature.geometry);
@@ -297,7 +299,7 @@
       ready = true;
       applyTypeFilter();
 
-      const initial = $page.url.searchParams.get('n');
+      const initial = page.url.searchParams.get('n');
       if (initial && bySlug.has(initial)) {
         select(bySlug.get(initial)!, { fly: true });
         // Feature state set before the source's data is parsed gets dropped; re-apply.
@@ -320,15 +322,13 @@
   });
 </script>
 
-<svelte:head>
-  <title>Neighborhood boundaries – What's My LA?</title>
-  <meta
-    name="description"
-    content="Browse the boundaries of every neighborhood, city and unincorporated area in Los Angeles County."
-  />
-</svelte:head>
+<Meta
+  title="Neighborhood boundaries – What's My LA?"
+  description="Browse the boundaries of every neighborhood, city and unincorporated area in Los Angeles County."
+  url={`${SITE_URL}/neighborhoods`}
+/>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="relative w-full h-[calc(100vh-3rem)]">
   <div bind:this={mapContainer} class="w-full h-full"></div>
@@ -360,7 +360,7 @@
           </div>
           <button
             type="button"
-            on:click={() => select(null)}
+            onclick={() => select(null)}
             class="shrink-0 -mr-1.5 -mt-1 w-8 h-8 rounded-full text-text-muted hover:bg-gray-100 hover:text-text"
             aria-label="Close"
           >
@@ -396,7 +396,7 @@
           <input
             type="search"
             bind:value={query}
-            on:keydown={handleSearchKeydown}
+            onkeydown={handleSearchKeydown}
             placeholder="Find a neighborhood or city…"
             disabled={!features.length}
             aria-label="Find a neighborhood or city"
@@ -408,7 +408,7 @@
                 <li>
                   <button
                     type="button"
-                    on:click={() => select(m, { fly: true })}
+                    onclick={() => select(m, { fly: true })}
                     class="w-full text-left px-4 py-2 hover:bg-surface-muted/50 border-b border-border-subtle last:border-b-0"
                   >
                     <span class="block text-sm font-medium text-text">{m.properties.name}</span>
@@ -436,7 +436,7 @@
                 <input
                   type="checkbox"
                   checked={visibleTypes.has(t)}
-                  on:change={() => toggleType(t)}
+                  onchange={() => toggleType(t)}
                   class="sr-only peer"
                 />
                 <span

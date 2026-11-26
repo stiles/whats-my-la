@@ -26,14 +26,27 @@ export interface GeocodeResponse {
   attribution: string;
 }
 
+// Bounding box around LA County (minLon,minLat,maxLon,maxLat) so forward
+// searches don't return matches in other states.
+const LA_COUNTY_BBOX = '-118.95,33.70,-117.65,34.82';
+
 export async function geocodeAddress(
   address: string,
-  accessToken: string
+  accessToken: string,
+  signal?: AbortSignal
 ): Promise<GeocodeResponse> {
   const encoded = encodeURIComponent(address);
+  const params = new URLSearchParams({
+    access_token: accessToken,
+    proximity: '-118.2437,34.0522',
+    bbox: LA_COUNTY_BBOX,
+    limit: '6',
+    // v5 no longer returns landmarks (POIs); those need Mapbox's Search Box API.
+    types: 'address,neighborhood,locality,place,postcode'
+  });
   const response = await fetch(
-    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?` +
-      `access_token=${accessToken}&proximity=-118.2437,34.0522&limit=5&types=address,place`
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
+    { signal }
   );
 
   if (!response.ok) {
@@ -46,9 +59,10 @@ export async function geocodeAddress(
 export async function reverseGeocode(
   lon: number,
   lat: number,
-  accessToken: string
+  accessToken: string,
+  fetchFn: typeof fetch = fetch
 ): Promise<GeocodeResponse> {
-  const response = await fetch(
+  const response = await fetchFn(
     `https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json?` +
       `access_token=${accessToken}&types=address`
   );
