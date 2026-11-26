@@ -7,15 +7,17 @@
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Core palette: sunset + harbor, WCAG-friendly */
-  --color-primary: #d83900;       /* main orange */
-  --color-secondary: #00345b;     /* deep navy for header / CTAs */
-  --color-accent: #f2a900;        /* warm yellow accents */
+  /* Sunset palette; mirrored in src/lib/colors.ts for map code. */
+  --color-primary: #d1495b;       /* rose: brand, City of LA */
+  --color-primary-ink: #c93347;   /* rose for small text and white-on-rose (AA on white) */
+  --color-secondary: #008aa3;     /* teal: cities */
+  --color-accent: #c98a1a;        /* gold: unincorporated areas, footer links */
   --color-background: #f5f5f5;    /* page background under cards */
   --color-text: #111827;          /* primary text */
 
   /* Surfaces and supporting tokens */
   --color-surface: #ffffff;       /* cards, panels, table backgrounds */
-  --color-surface-muted: #ffe5d2; /* soft orange highlight (e.g. local column) */
+  --color-surface-muted: #fbe4e7; /* soft rose highlight (e.g. hover rows) */
   --color-footer: #020617;        /* very dark navy for footer/header */
   --color-border-subtle: #e5e7eb; /* dividers, card borders */
   --color-text-muted: #4b5563;    /* secondary / helper text */

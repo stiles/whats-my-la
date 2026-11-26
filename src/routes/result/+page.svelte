@@ -135,7 +135,7 @@
   {:else}
     <!-- Header -->
     <div class="mb-8">
-      <a href="/" class="text-primary hover:underline mb-2 inline-block">← Search again</a>
+      <a href="/" class="text-primary-ink hover:underline mb-2 inline-block">← Search again</a>
       <h1 class="text-3xl md:text-4xl font-bold text-text mb-3">{placeHeadline}</h1>
       {#if address}
         <p class="text-base text-gray-600">
@@ -171,7 +171,7 @@
     {#if error}
       <div class="mb-10 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
         <p class="text-red-800 mb-4">{error}</p>
-        <a href="/" class="text-primary hover:underline">← Go back and try again</a>
+        <a href="/" class="text-primary-ink hover:underline">← Go back and try again</a>
       </div>
     {/if}
 

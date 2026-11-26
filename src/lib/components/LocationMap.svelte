@@ -4,6 +4,7 @@
   import mapboxgl from 'mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
   import { loadNeighborhoods, getBounds } from '$lib/api/neighborhoods';
+  import { ROSE } from '$lib/colors';
 
   export let lat: number;
   export let lon: number;
@@ -30,7 +31,7 @@
 
     // Add a marker at the location
     new mapboxgl.Marker({
-      color: '#d83900'
+      color: ROSE
     })
       .setLngLat([lon, lat])
       .setPopup(
@@ -76,7 +77,7 @@
             slot: 'middle', // under the basemap's labels (Mapbox Standard)
             source: sourceId,
             paint: {
-              'fill-color': '#d83900',
+              'fill-color': ROSE,
               'fill-opacity': 0.15
             }
           });
@@ -89,7 +90,7 @@
             slot: 'middle', // under the basemap's labels (Mapbox Standard)
             source: sourceId,
             paint: {
-              'line-color': '#d83900',
+              'line-color': ROSE,
               'line-width': 2.5,
               'line-opacity': 0.8
             }

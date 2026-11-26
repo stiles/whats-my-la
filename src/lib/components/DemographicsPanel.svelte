@@ -87,7 +87,7 @@
       <!-- Right: Bullet chart visualization -->
       <div class="bg-white rounded-lg border border-border-subtle p-4">
         <p class="text-sm text-text-muted mb-4">
-          <span class="font-semibold text-white" style="background-color: #d83900; padding: 2px 8px; border-radius: 4px;">{placeLabel}</span> compared to <span class="font-semibold" style="background-color: #e5e7eb; padding: 2px 8px; border-radius: 4px;">LA County</span>
+          <span class="font-semibold text-white" style="background-color: var(--color-primary-ink); padding: 2px 8px; border-radius: 4px;">{placeLabel}</span> compared to <span class="font-semibold" style="background-color: #e5e7eb; padding: 2px 8px; border-radius: 4px;">LA County</span>
         </p>
         
         <div class="space-y-4">
@@ -124,7 +124,7 @@
                   <!-- Place bar (red, thinner, overlaid) -->
                   <div 
                     class="absolute top-1/2 left-0 -translate-y-1/2 h-3 rounded"
-                    style="width: {placePct}%; background-color: #d83900"
+                    style="width: {placePct}%; background-color: var(--color-primary)"
                   ></div>
                   <!-- Percentage label with halo, positioned 5px from red bar -->
                   {#if placePct > 15}
