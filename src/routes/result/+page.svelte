@@ -109,6 +109,12 @@
     }
   }
 
+  // The API sometimes returns a full name ("Fire Station 20") and may return a
+  // bare number; only add the prefix when it isn't already there.
+  function fireStationLabel(station: string): string {
+    return /station/i.test(station) ? station : `Station ${station}`;
+  }
+
   // Icon SVGs
   const icons = {
     neighborhood: '<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>',
@@ -238,7 +244,7 @@
           <GeographyCard
             icon={icons.fire}
             label="Fire Protection"
-            value={geographyData.fire.station ? `Station ${geographyData.fire.station}` : geographyData.fire.agency}
+            value={geographyData.fire.station ? fireStationLabel(geographyData.fire.station) : geographyData.fire.agency}
             subtitle={geographyData.fire.type === 'contract' 
               ? `${geographyData.fire.agency} (via contract)` 
               : geographyData.fire.agency}
