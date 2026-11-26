@@ -104,6 +104,7 @@ export interface LAGeographyResponse {
     district: string;
     representative?: string | null;
   };
+  supervisorDistrict?: string; // e.g. "District 3"; every address has one
   demographics?: {
     neighborhood?: SimpleDemographics;
     city?: SimpleDemographics;
@@ -118,9 +119,10 @@ export interface LAGeographyResponse {
 
 export async function getLAGeography(
   lat: number,
-  lon: number
+  lon: number,
+  fetchFn: typeof fetch = fetch
 ): Promise<LAGeographyResponse> {
-  const response = await fetch(
+  const response = await fetchFn(
     `https://api.stilesdata.com/la-geography/lookup?lat=${lat}&lon=${lon}`
   );
 
@@ -129,8 +131,6 @@ export async function getLAGeography(
   }
 
   const rawData: RawAPIResponse = await response.json();
-  // console.log('Raw API Response:', rawData);
-  
   // Validate the response structure
   if (!rawData || rawData.status !== 'success' || !rawData.results) {
     throw new Error('Invalid API response format');
@@ -194,6 +194,10 @@ export async function getLAGeography(
     transformedData.representation = rawData.results.representation;
   }
 
+  if (rawData.results.supervisor_district) {
+    transformedData.supervisorDistrict = rawData.results.supervisor_district;
+  }
+
   // Map demographics
   if (rawData.results.neighborhood_demographics) {
     transformedData.demographics = {
@@ -242,8 +246,6 @@ export async function getLAGeography(
     };
   }
 
-  // console.log('Transformed data:', transformedData);
-  
   return transformedData;
 }
 

@@ -6,14 +6,29 @@
   import { loadNeighborhoods, getBounds } from '$lib/api/neighborhoods';
   import { ROSE } from '$lib/colors';
 
-  export let lat: number;
-  export let lon: number;
-  export let address: string = '';
-  export let neighborhoodName: string | undefined = undefined;
-  export let cityName: string | undefined = undefined;
+  
+  interface Props {
+    lat: number;
+    lon: number;
+    address?: string;
+    neighborhoodName?: string | undefined;
+    cityName?: string | undefined;
+    // Height classes for the map box; the parent layout can stretch it.
+    heightClass?: string;
+  }
+
+  let {
+    lat,
+    lon,
+    address = '',
+    neighborhoodName = undefined,
+    cityName = undefined,
+    heightClass = 'h-96'
+  }: Props = $props();
 
   let mapContainer: HTMLDivElement;
   let map: mapboxgl.Map | null = null;
+  let resizeObserver: ResizeObserver | null = null;
 
   onMount(() => {
     mapboxgl.accessToken = PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -25,6 +40,10 @@
       zoom: 13,
       attributionControl: true
     });
+
+    // Mapbox only tracks window resizes; the box can also change with the layout.
+    resizeObserver = new ResizeObserver(() => map?.resize());
+    resizeObserver.observe(mapContainer);
 
     // Add navigation controls
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -108,6 +127,7 @@
   });
 
   onDestroy(() => {
+    resizeObserver?.disconnect();
     if (map) {
       map.remove();
       map = null;
@@ -115,7 +135,7 @@
   });
 </script>
 
-<div class="bg-surface rounded-lg shadow-md overflow-hidden border border-border-subtle">
-  <div bind:this={mapContainer} class="w-full h-96"></div>
+<div class="bg-surface rounded-lg overflow-hidden border border-border-subtle {heightClass}">
+  <div bind:this={mapContainer} class="w-full h-full"></div>
 </div>
 

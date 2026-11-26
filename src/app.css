@@ -24,14 +24,15 @@
 }
 
 
-.coordinates {
-  font-size: 0.7rem;
-  color: #858585;
-  margin-top: 0.5rem;
-}
 @layer base {
   /* Avoid one-word last lines in body copy. */
   p {
     text-wrap: pretty;
   }
+}
+
+/* Indeterminate progress bar shown while a page's data loads. */
+@keyframes nav-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
 }
