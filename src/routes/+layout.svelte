@@ -10,9 +10,10 @@
         <a href="/" class="flex items-center gap-2">
           <span class="text-xl font-semibold text-white">What's My LA?</span>
         </a>
-        <!-- <div class="text-sm text-gray-200">
-          Where you really live
-        </div> -->
+        <div class="flex items-center gap-4 text-sm">
+          <a href="/explore" class="text-gray-200 hover:text-white">Explore</a>
+          <a href="/neighborhoods" class="text-gray-200 hover:text-white">Neighborhoods</a>
+        </div>
       </div>
     </div>
   </nav>

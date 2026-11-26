@@ -3,6 +3,7 @@
   import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
   import mapboxgl from 'mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
+  import { loadNeighborhoods, getBounds } from '$lib/api/neighborhoods';
 
   export let lat: number;
   export let lon: number;
@@ -12,66 +13,6 @@
 
   let mapContainer: HTMLDivElement;
   let map: mapboxgl.Map | null = null;
-  let neighborhoodsGeoJson: GeoJSON.FeatureCollection | null = null;
-
-  async function loadNeighborhoodGeoJson(): Promise<GeoJSON.FeatureCollection | null> {
-    if (neighborhoodsGeoJson) return neighborhoodsGeoJson;
-
-    try {
-      const res = await fetch('https://stilesdata.com/la-geography/la_neighborhoods_comprehensive_simplified.geojson');
-      if (!res.ok) {
-        console.error('Failed to load neighborhoods GeoJSON', res.statusText);
-        return null;
-      }
-      neighborhoodsGeoJson = await res.json();
-      // console.log('Loaded neighborhoods GeoJSON', neighborhoodsGeoJson);
-      return neighborhoodsGeoJson;
-    } catch (err) {
-      console.error('Error loading neighborhoods GeoJSON', err);
-      return null;
-    }
-  }
-
-  function getFeatureBounds(feature: GeoJSON.Feature): mapboxgl.LngLatBoundsLike {
-    let minLng = Infinity;
-    let minLat = Infinity;
-    let maxLng = -Infinity;
-    let maxLat = -Infinity;
-
-    const updateBounds = (coords: number[][]) => {
-      for (const [lng, lat] of coords) {
-        if (lng < minLng) minLng = lng;
-        if (lng > maxLng) maxLng = lng;
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-      }
-    };
-
-    const geom = feature.geometry;
-    if (!geom) {
-      return [
-        [lon - 0.01, lat - 0.01],
-        [lon + 0.01, lat + 0.01]
-      ];
-    }
-
-    if (geom.type === 'Polygon') {
-      for (const ring of geom.coordinates) {
-        updateBounds(ring as number[][]);
-      }
-    } else if (geom.type === 'MultiPolygon') {
-      for (const poly of geom.coordinates) {
-        for (const ring of poly) {
-          updateBounds(ring as number[][]);
-        }
-      }
-    }
-
-    return [
-      [minLng, minLat],
-      [maxLng, maxLat]
-    ];
-  }
 
   onMount(() => {
     mapboxgl.accessToken = PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -101,14 +42,17 @@
     // Optionally draw neighborhood or city outline
     if (neighborhoodName || cityName) {
       map.on('load', async () => {
-        const data = await loadNeighborhoodGeoJson();
-        if (!data) return;
+        let data;
+        try {
+          data = await loadNeighborhoods();
+        } catch (err) {
+          console.error('Error loading neighborhoods GeoJSON', err);
+          return;
+        }
+        if (!map) return;
 
         const targetName = neighborhoodName || cityName;
-        const feature = data.features.find((f) => {
-          const props = (f.properties || {}) as any;
-          return props.name === targetName;
-        });
+        const feature = data.features.find((f) => f.properties?.name === targetName);
 
         if (!feature) {
           console.warn('No neighborhood feature found for', targetName);
@@ -151,7 +95,7 @@
         }
 
         try {
-          const bounds = getFeatureBounds(feature);
+          const bounds = getBounds(feature.geometry);
           map!.fitBounds(bounds, { padding: 40, maxZoom: 14, duration: 800 });
         } catch (err) {
           console.error('Failed to fit bounds for neighborhood', err);
