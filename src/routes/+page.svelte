@@ -1,30 +1,13 @@
 <script lang="ts">
   import AddressSearch from '$lib/components/AddressSearch.svelte';
   import HeroMap from '$lib/components/HeroMap.svelte';
+  import Meta from '$lib/components/Meta.svelte';
 </script>
 
-<svelte:head>
-  <title>What's my Los Angeles? – Figure out where you really live</title>
-  <meta
-    name="description"
-    content="Los Angeles County's geography is confusing. We're here to help."
-  />
-
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://whatsmyla.com/" />
-  <meta property="og:title" content="What's my Los Angeles? – Figure out where you really live" />
-  <meta property="og:description" content="Los Angeles County's geography is confusing. We're here to help." />
-  <meta property="og:image" content="https://whatsmyla.com/sharecard.jpg" />
-  
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://whatsmyla.com/" />
-  <meta property="twitter:title" content="What's my Los Angeles? – Figure out where you really live" />
-  <meta property="twitter:description" content="Los Angeles County's geography is confusing. We're here to help." />
-  <meta property="twitter:image" content="https://whatsmyla.com/sharecard.jpg" />
-</svelte:head>
+<Meta
+  title="What's My LA? – Figure out where you really live"
+  description="Los Angeles County's geography is confusing. Drop in an address to see its neighborhood, city, police and fire coverage, representatives and demographics."
+/>
 
 <div class="relative overflow-hidden">
   <!-- Hero Section with background map -->
@@ -96,30 +79,6 @@
     </div>
   </div>
 
-  <!-- Example Section -->
-  <!-- <div class="py-20 bg-gradient-to-br from-primary to-secondary text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold mb-6">Perfect for</h2>
-      <div class="grid md:grid-cols-4 gap-6 text-left">
-        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-6">
-          <h3 class="font-semibold mb-2">New Residents</h3>
-          <p class="text-sm text-white text-opacity-90">Learn about your new neighborhood and community.</p>
-        </div>
-        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-6">
-          <h3 class="font-semibold mb-2">Researchers</h3>
-          <p class="text-sm text-white text-opacity-90">Quick geographic context for analysis and reporting.</p>
-        </div>
-        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-6">
-          <h3 class="font-semibold mb-2">Journalists</h3>
-          <p class="text-sm text-white text-opacity-90">Verify locations and add geographic detail to stories.</p>
-        </div>
-        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-6">
-          <h3 class="font-semibold mb-2">Curious Angelenos</h3>
-          <p class="text-sm text-white text-opacity-90">Settle those "which neighborhood is that?" debates.</p>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </div>
 
 <style>
