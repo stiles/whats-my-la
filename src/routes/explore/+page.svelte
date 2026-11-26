@@ -4,45 +4,44 @@
   import { PUBLIC_MAPBOX_ACCESS_TOKEN } from '$env/static/public';
   import mapboxgl from 'mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
+  import { ROSE } from '$lib/colors';
+  import { LA_BASIN, LA_BASIN_PORTRAIT } from '$lib/mapViews';
 
   let mapContainer: HTMLDivElement;
   let map: mapboxgl.Map | null = null;
-  let showHint = true;
+  // Touch screens have no hover; say "Tap" there and "Click" elsewhere.
+  let touch = false;
+  let lookingUp = false;
 
   onMount(() => {
-    mapboxgl.accessToken = PUBLIC_MAPBOX_ACCESS_TOKEN;
+    touch = window.matchMedia('(hover: none)').matches;
+    const portrait = window.innerWidth < window.innerHeight;
 
+    mapboxgl.accessToken = PUBLIC_MAPBOX_ACCESS_TOKEN;
     map = new mapboxgl.Map({
       container: mapContainer,
       style: 'mapbox://styles/stiles/cmwxn586f00iv01srax141zqj',
-      center: [-118.2244, 34.023], // LA center
-      zoom: 9,
+      bounds: portrait ? LA_BASIN_PORTRAIT : LA_BASIN,
+      fitBoundsOptions: { padding: { top: 24, right: 24, left: 24, bottom: 72 } },
       attributionControl: true
     });
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    // Dismiss hint after 3 seconds
-    setTimeout(() => {
-      showHint = false;
-    }, 4000);
-
-    // Add click handler
-    map.on('click', (e) => {
-      showHint = false; // Hide hint on first click
-      const { lng, lat } = e.lngLat;
-      goto(`/result?lat=${lat.toFixed(6)}&lon=${lng.toFixed(6)}`);
-    });
-
-    // Change cursor to plus sign
     map.getCanvas().style.cursor = 'crosshair';
+
+    map.on('click', (e) => {
+      if (lookingUp || !map) return;
+      lookingUp = true;
+      // Drop a pin where they tapped so the jump to results doesn't feel abrupt.
+      new mapboxgl.Marker({ color: ROSE }).setLngLat(e.lngLat).addTo(map);
+      const { lng, lat } = e.lngLat;
+      setTimeout(() => goto(`/result?lat=${lat.toFixed(6)}&lon=${lng.toFixed(6)}`), 200);
+    });
   });
 
   onDestroy(() => {
-    if (map) {
-      map.remove();
-      map = null;
-    }
+    map?.remove();
+    map = null;
   });
 </script>
 
@@ -50,32 +49,26 @@
   <title>Explore Los Angeles - What's My LA?</title>
   <meta
     name="description"
-    content="Click anywhere on the map to explore Los Angeles County's neighborhoods, cities, and geographic layers."
+    content="Tap or click anywhere on the map to explore Los Angeles County's neighborhoods, cities, and geographic layers."
   />
 </svelte:head>
 
 <div class="relative w-full h-[calc(100vh-3rem)]">
-
-  <!-- Center instructional hint (subtle and auto-dismissing) -->
-  {#if showHint}
-    <div class="absolute inset-0 z-20 pointer-events-none flex items-center justify-center transition-opacity duration-500"
-         class:opacity-0={!showHint}>
-      <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg px-4 py-3 text-center">
-        <div class="flex items-center gap-3">
-          <img 
-            src="/click.png" 
-            alt="Click" 
-            class="h-8 w-auto animate-pulse"
-          />
-          <span class="text-sm font-medium text-text">
-            Click anywhere to explore
-          </span>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  <!-- Full bleed map -->
   <div bind:this={mapContainer} class="w-full h-full"></div>
-</div>
 
+  <!-- Persistent instruction, kept off the center of the map where people tap -->
+  <div class="absolute z-10 bottom-10 left-1/2 -translate-x-1/2 pointer-events-none">
+    <div
+      class="flex items-center gap-2 whitespace-nowrap rounded-full bg-white/95 backdrop-blur-sm border border-border-subtle shadow-md px-4 py-2 text-sm font-medium text-text"
+      role="status"
+    >
+      {#if lookingUp}
+        <span class="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></span>
+        Looking up this spot…
+      {:else}
+        <i class="fa-solid {touch ? 'fa-hand-pointer' : 'fa-arrow-pointer'} text-primary"></i>
+        {touch ? 'Tap' : 'Click'} any spot to look it up
+      {/if}
+    </div>
+  </div>
+</div>
