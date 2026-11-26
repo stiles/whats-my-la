@@ -74,8 +74,13 @@ export let geographyData: LAGeographyResponse;
   $: cityName = geographyData.layers.la_neighborhoods_comprehensive?.type
     || geographyData.layers.la_regions?.name
     || '';
-  $: lapd = geographyData.layers.lapd_divisions?.aprec || 'N/A';
-  $: council = geographyData.layers.la_city_council_districts?.district_name || 'N/A';
+  $: lawEnforcement =
+    geographyData.law_enforcement?.station || geographyData.law_enforcement?.agency || 'N/A';
+  $: representationLabel =
+    geographyData.representation?.type === 'city_council' ? 'Council District' : 'Supervisor District';
+  $: representationDistrict = geographyData.representation?.district
+    ? `District ${geographyData.representation.district}`
+    : 'N/A';
   $: population = geographyData.demographics?.neighborhood?.population
     || geographyData.demographics?.city?.population
     || 0;
@@ -158,12 +163,12 @@ export let geographyData: LAGeographyResponse;
 
             <div class="grid grid-cols-2 gap-6">
               <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                <div class="text-lg opacity-80 mb-2">Police Division</div>
-                <div class="text-2xl font-bold">{lapd}</div>
+                <div class="text-lg opacity-80 mb-2">Law Enforcement</div>
+                <div class="text-2xl font-bold">{lawEnforcement}</div>
               </div>
               <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                <div class="text-lg opacity-80 mb-2">Council District</div>
-                <div class="text-2xl font-bold">{council}</div>
+                <div class="text-lg opacity-80 mb-2">{representationLabel}</div>
+                <div class="text-2xl font-bold">{representationDistrict}</div>
               </div>
             </div>
 
@@ -175,10 +180,12 @@ export let geographyData: LAGeographyResponse;
                     <div class="text-lg opacity-80">Population</div>
                     <div class="text-3xl font-bold">{formatNumber(population)}</div>
                   </div>
-                  <div>
-                    <div class="text-lg opacity-80">Density</div>
-                    <div class="text-3xl font-bold">{density}/mi²</div>
-                  </div>
+                  {#if density !== 'N/A'}
+                    <div>
+                      <div class="text-lg opacity-80">Density</div>
+                      <div class="text-3xl font-bold">{density}/mi²</div>
+                    </div>
+                  {/if}
                 </div>
               </div>
             {/if}

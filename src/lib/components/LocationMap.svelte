@@ -94,7 +94,7 @@
       .setLngLat([lon, lat])
       .setPopup(
         new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`<strong>${address || 'Your Location'}</strong>`)
+          .setText(address || 'Your location')
       )
       .addTo(map);
 
