@@ -16,3 +16,7 @@ NEXT_STEPS.md
 
 # /brag launch video renders
 brag-output/
+
+# merch Chrome render scratch
+merch/_r_*.html
+merch/
